@@ -1,3 +1,5 @@
+#include "../../includes/topo.hpp"
+
 void    *memalloc(size_t size) {
 	void	*res;
 

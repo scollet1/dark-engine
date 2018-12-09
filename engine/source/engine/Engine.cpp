@@ -1,40 +1,30 @@
-#include "../../includes/topo.hpp"
+//#include "../../includes/topo.hpp"
+#include "../../includes/engine/Engine.hpp"
 
-Engine::Engine() {}
-Engine::~Engine() {}
+Environ                     *gEnv;
 
 bool    Engine::_Init() {
-	t_task t;
-
-	renderer = new Renderer();
-	if (renderer._Init() == FAILURE)
-		return (gEnv._Error(true, -1, __func__, WHICH(renderer), "renderer init failed"));
-
-	t.func = renderer._Destroy();
-	destroy.push(t);
-
+	renderer = new RenderMgr();
+	if (renderer->_Init() == FAILURE)
+		return (gEnv->_Error(true, -1, __func__, WHICH(renderer), "renderer init failed"));
 	game = new Game();
-	if (game._Init() == FAILURE)
-		return (gEnv._Error(true, -1, __func__, WHICH(game), "game init failed"));
-
-	t.func = game._Destroy();
-	destroy.push(t);
-
+	if (game->_Init() == FAILURE)
+		return (gEnv->_Error(true, -1, __func__, WHICH(game), "game init failed"));
 	return (SUCCESS);
 }
 
 bool    Engine::_Run() {
-	return (game._Run());
+	return (game->_Run());
 }
 
 bool    Engine::_Destroy() {
-	t_task t;
+	std::string errmsg = "destruction failed";
 
-	while (!destroy.empty()) {
-		if (!t = destroy.pop())
-			return (gEnv._Error(true, -1, __func__, WHICH(t), "null variable"));
-		if (t.func() == FAILURE)
-			return (gEnv._Error(true, -1, __func__, WHICH(t.func), "failure destroying"));
-	}
+	if (game->_Destroy() == FAILURE)
+		return (gEnv->_Error(true, -1, __func__, WHICH(game), errmsg));
+	delete game;
+	if (renderer->_Destroy() == FAILURE)
+		return (gEnv->_Error(true, -1, __func__, WHICH(renderer), errmsg));
+	delete renderer;
 	return (SUCCESS);
 }
