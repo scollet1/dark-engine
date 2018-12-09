@@ -1,14 +1,16 @@
-#include "../includes/topo.hpp"
+#include "../includes/engine/Engine.hpp"
 
 int main(int argc, char ** argv) {
-	Topo topo;
+	Engine *engine;
 
-	topo = new Topo();
-	if (topo._Start() == FAILURE)
+	(void)argc;
+	(void)argv;
+	engine = new Engine();
+	if (engine->_Init() == FAILURE)
 		return (EXIT_FAILURE);
-	if (topo._Run() == FAILURE)
+	if (engine->_Run() == FAILURE)
 		return (EXIT_FAILURE);
-	if (topo._Destroy() == FAILURE)
+	if (engine->_Destroy() == FAILURE)
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

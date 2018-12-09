@@ -1,3 +1,1 @@
-typedef struct  s_status {
-	bool        running;
-}               t_status;
+void    *memalloc(size_t size);
