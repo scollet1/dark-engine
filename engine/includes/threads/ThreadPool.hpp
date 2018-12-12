@@ -11,19 +11,18 @@ public:
 	ThreadPool() {}
 	~ThreadPool() {}
 
-	bool    _Init(unsigned int num_threads);
+	bool            _Init(unsigned int num_threads);
 
 	/*
-	** atomic boost push() wrapper
-	** pushes job element onto buffer
+	** Getters
 	*/
-
-	unsigned int getNumThreads();
-	unsigned int getMaxThreads();
-	unsigned int getHardThreads();
+	unsigned int    getNumThreads();
+	unsigned int    getMaxThreads();
+	unsigned int    getHardThreads();
 
 private:
 	unsigned int                _hard_threads;
 	unsigned int                num_threads;
 	std::vector<std::thread>    _thread_pool;
+	t_status                    *status;
 };
