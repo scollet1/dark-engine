@@ -10,12 +10,8 @@ public:
 		*this = rhs; return (*this);
 	}
 
-	/*
-	** atomic boost push() wrapper
-	** pushes job element onto buffer
-	*/
-	bool _jq_push(Job &elem);
-	Job& _jq_consume();
+	bool feed(Job &elem);
+	bool digest();
 
 private:
 	/*
