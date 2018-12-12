@@ -13,6 +13,11 @@ public:
 
 	bool    _Init(unsigned int num_threads);
 
+	/*
+	** atomic boost push() wrapper
+	** pushes job element onto buffer
+	*/
+
 	unsigned int getNumThreads();
 	unsigned int getMaxThreads();
 	unsigned int getHardThreads();
