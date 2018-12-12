@@ -4,12 +4,25 @@
 Environ                     *gEnv;
 
 bool    Engine::_Init() {
+
+	Env = new Environ();
+	if (Env->_Init() == FAILURE) {
+		printf("Wow, something's really messed up.\n");
+		return (FAILURE);
+	}
+
+	tpool = new ThreadPool();
+	if (tpool->_Init(128) == FAILURE)
+		return (gEnv->_Error(true, -1, __func__, WHICH(tpool), "thread pool init failed"));
+
 	renderer = new RenderMgr();
 	if (renderer->_Init() == FAILURE)
 		return (gEnv->_Error(true, -1, __func__, WHICH(renderer), "renderer init failed"));
+
 	game = new Game();
 	if (game->_Init() == FAILURE)
 		return (gEnv->_Error(true, -1, __func__, WHICH(game), "game init failed"));
+
 	return (SUCCESS);
 }
 

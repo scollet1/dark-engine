@@ -19,9 +19,7 @@
 #include "./engine/Environ.hpp"
 #include "./utils/utils.hpp"
 
-typedef struct              s_task {
-	int                     id;
-	std::function<void()>   func;
-}                           t_task;
+#include "./threads/JobQueue.hpp"
+JobQueue                *g_job_q;
 
 #endif

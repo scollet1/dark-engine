@@ -1,6 +1,9 @@
 #include "./game/Game.hpp"
 #include "./render/RenderMgr.hpp"
 
+#include "../threads/JobQueue.hpp"
+#include "../threads/ThreadPool.hpp"
+
 class Engine {
 public:
 
@@ -15,8 +18,12 @@ public:
 	bool    _Run();
 	bool    _Destroy();
 
+	Environ&    getEnv() {return (Env);}
+	ThreadPool& getTpool() {return (tpool);}
+
 private:
-	Game                    *game;
+	ThreadPool              *tpool;
 	RenderMgr               *renderer;
-//	queue<>           *destroy;
+	Game                    *game;
+	Environ                 *Env;
 };

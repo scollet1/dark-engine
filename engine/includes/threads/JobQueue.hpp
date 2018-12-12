@@ -1,5 +1,6 @@
 #include "../topo.hpp"
 #include <boost/lockfree/queue>
+#include "./Job.hpp"
 
 class JobQueue {
 public:
@@ -10,8 +11,17 @@ public:
 		*this = rhs; return (*this);
 	}
 
+	/*
+	** atomic boost push() wrapper
+	** pushes job element onto buffer
+	*/
 	bool feed(Job &elem);
+	/*
+	** Block until job queue is exhausted
+	*/
 	bool digest();
+	bool empty();
+	Job* consume();
 
 private:
 	/*
