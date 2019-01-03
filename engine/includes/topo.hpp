@@ -1,25 +1,29 @@
 #ifndef TOPO_HPP
 #define TOPO_HPP
 
+#include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <cstdlib>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <utility>
 
-#include <stack>
-#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdexcept>
+
 #include <deque>
 #include <functional>
+#include <map>
+#include <set>
+#include <stack>
+#include <string>
+#include <vector>
 
 #include "./defined.hpp"
 #include "./engine/Environ.hpp"
 #include "./utils/utils.hpp"
-
-#include "./threads/JobQueue.hpp"
-JobQueue                *g_job_q;
 
 #endif

@@ -1,5 +1,10 @@
 #include "../../includes/threads/JobQueue.hpp"
 
+bool		JobQueue::_Init(size_t num_threads) {
+	(void)num_threads;
+	return (true);
+}
+
 bool        JobQueue::feed(void*(*f)(*void), void *data) {
 	Job *job;
 
@@ -11,7 +16,7 @@ bool        JobQueue::feed(void*(*f)(*void), void *data) {
 }
 
 Job*        JobQueue::consume() {
-	Job *job;
+	Job *job;=
 
 	while (true) {
 		if ((job = job_q.pop()))

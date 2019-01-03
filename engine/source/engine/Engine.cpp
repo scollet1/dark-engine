@@ -1,9 +1,7 @@
 //#include "../../includes/topo.hpp"
 #include "../../includes/engine/Engine.hpp"
 
-Environ                     *gEnv;
-
-bool    Engine::_Init() {
+bool    Engine::_Init(const char *title, const char *name) {
 
 	Env = new Environ();
 	if (Env->_Init() == FAILURE) {
@@ -11,17 +9,17 @@ bool    Engine::_Init() {
 		return (FAILURE);
 	}
 
-	tpool = new ThreadPool();
-	if (tpool->_Init(128) == FAILURE)
-		return (gEnv->_Error(true, -1, __func__, WHICH(tpool), "thread pool init failed"));
+	thrpool = new ThreadPool();
+	if (thrpool->_Init(128) == FAILURE)
+		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(thrpool), "thread pool init failed"));
 
-	renderer = new RenderMgr();
-	if (renderer->_Init() == FAILURE)
-		return (gEnv->_Error(true, -1, __func__, WHICH(renderer), "renderer init failed"));
+	renderMgr = new RenderMgr();
+	if (renderMgr->_Init(title, name) == FAILURE)
+		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), "renderer init failed"));
 
 	game = new Game();
 	if (game->_Init() == FAILURE)
-		return (gEnv->_Error(true, -1, __func__, WHICH(game), "game init failed"));
+		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(game), "game init failed"));
 
 	return (SUCCESS);
 }
@@ -34,10 +32,8 @@ bool    Engine::_Destroy() {
 	std::string errmsg = "destruction failed";
 
 	if (game->_Destroy() == FAILURE)
-		return (gEnv->_Error(true, -1, __func__, WHICH(game), errmsg));
-	delete game;
-	if (renderer->_Destroy() == FAILURE)
-		return (gEnv->_Error(true, -1, __func__, WHICH(renderer), errmsg));
-	delete renderer;
+		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(game), errmsg));
+	if (renderMgr->_Destroy() == FAILURE)
+		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), errmsg));
 	return (SUCCESS);
 }

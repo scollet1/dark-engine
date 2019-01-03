@@ -32,12 +32,32 @@ public:
 
 	bool        _Init();
 	bool        _Destroy();
-	bool        _Error(bool fatal, int errcode, std::string func, std::string var, std::string errmsg);
+	bool        _Error(bool fatal, int errcode,
+						std::string file,
+						std::string func,
+						int line,
+						std::string var,
+						std::string errmsg);
 
 	void        _Err_Log();
-	void        _Err_Sys(int errcode, std::string func, std::string var, std::string errmsg);
-	void        _Err_Proc(int errcode, std::string func, std::string var, std::string errmsg);
-	void        _Err_Else(int errcode, std::string func, std::string var, std::string errmsg);
+	void        _Err_Sys(int errcode,
+						 std::string file,
+						 std::string func,
+						 std::string line,
+						 std::string var,
+						 std::string errmsg);
+	void        _Err_Proc(int errcode,
+						  std::string file,
+						  std::string func,
+						  std::string line,
+						  std::string var,
+						  std::string errmsg);
+	void        _Err_Else(int errcode,
+						  std::string file,
+						  std::string func,
+						  std::string line,
+						  std::string var,
+						  std::string errmsg);
 
 private:
 	t_status    *status;

@@ -1,5 +1,6 @@
 #include "../topo.hpp"
 #include <thread>
+#include "../threads/JobQueue.hpp"
 
 class Thread {
 public:
@@ -7,17 +8,10 @@ public:
 	~Thread() {}
 
 	bool            _Init(unsigned int num_threads);
-
 	bool            consume();
 
-	unsigned int    getNumThreads();
-	unsigned int    getMaxThreads();
-	unsigned int    getHardThreads();
-
 private:
-	unsigned int                _hard_threads;
-	unsigned int                num_threads;
-	std::vector<std::thread>    _thread_pool;
-	t_status                    *status;
+	std::vector<std::thread>	_fibers;
+	JobQueue					j_q;
 
 };
