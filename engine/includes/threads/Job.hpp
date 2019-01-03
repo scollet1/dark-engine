@@ -1,4 +1,4 @@
-#include "../topo.hpp"
+#include "../types.hpp"
 
 class Job {
 public:
@@ -18,8 +18,8 @@ public:
 	/*
 	** Setters
 	*/
-	bool    setFunc(const &f);
-	bool    setData(const &d);
+	bool    setFunc(const std::function<bool(void*)> &f);
+	bool    setData(const void* &d);
 
 
 private:

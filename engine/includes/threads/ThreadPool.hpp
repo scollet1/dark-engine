@@ -1,8 +1,12 @@
 #include "../topo.hpp"
 #include <thread>
 
+#ifndef MAX_THREADS
+#define MAX_THREADS 65000
+#endif
+
 typedef struct              s_task {
-	int                     id;
+	unsigned int          	id;
 	std::function<void()>   func;
 }                           t_task;
 
@@ -11,18 +15,18 @@ public:
 	ThreadPool() {}
 	~ThreadPool() {}
 
-	bool            _Init(unsigned int num_threads);
+	bool            _Init(unsigned short num_threads);
 
 	/*
 	** Getters
 	*/
-	unsigned int    getNumThreads();
-	unsigned int    getMaxThreads();
-	unsigned int    getHardThreads();
+	unsigned short    getNumThreads();
+	unsigned short    getMaxThreads();
+	unsigned short    getHardThreads();
 
 private:
-	unsigned int                _hard_threads;
-	unsigned int                num_threads;
-	std::vector<std::thread>    _thread_pool;
+	unsigned short                		_hard_threads;
+	unsigned short                		num_threads;
+	std::thread					*_thread_pool;
 	t_status                    *status;
 };

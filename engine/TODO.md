@@ -10,7 +10,20 @@
 			- [ ] Ruby
 			- [ ] Python
 
-	- [ ] Renderer
+	- [ ] RenderMgr
+		- [ ] vulkan library wrapper
+			- [ ] vulkan app info
+			- [ ] vulkan instance
+			- [ ] vulkan window
+
+		- [ ] rendermgr lifecycle
+			- [ ] create window
+			- [ ] accept simulated data
+			- [ ] render
+			- [ ] swap chain
+			- [ ] repeat
+			- [ ] cleanup & destroy
+
 		- [ ] Materials and shaders
 		- [ ] Primitive Submission
 		- [ ] Static and Dynamic Lighting

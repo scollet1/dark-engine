@@ -1,24 +1,24 @@
 #include "../../includes/threads/ThreadPool.hpp"
 
-bool ThreadPool::_Init(unsigned int num_threads) {
+bool ThreadPool::_Init(unsigned short num_threads) {
 	_hard_threads = std::thread::hardware_concurrency();
 
-	if (num_threads > _max_Threads)
+	if (num_threads > MAX_THREADS)
 		num_threads = 4;
 	// create threadpool
-	num_threads = _hard_threads * 16;
-	std::vector<std::thread> tpool (num_threads, consume);
-	_thread_pool = tpool;
+	num_threads = _hard_threads;
+	_thread_pool = new std::thread[num_threads];
+	return (true);
 }
 
-unsigned int ThreadPool::getNumThreads() {
+unsigned short ThreadPool::getNumThreads() {
 	return (num_threads);
 }
 
-unsigned int ThreadPool::getMaxThreads() {
-	return (_hard_threads * 32)
+unsigned short ThreadPool::getMaxThreads() {
+	return (_hard_threads * 32);
 }
 
-unsigned int ThreadPool::getHardThreads() {
+unsigned short ThreadPool::getHardThreads() {
 	return (_hard_threads);
 }

@@ -5,7 +5,7 @@ public:
 	Game() {}
 	~Game() {}
 	Game(const Game &rhs) {*this = rhs;}
-	Game& operator=(const Game &rhs) {
+	Game operator=(const Game &rhs) {
 		*this = rhs; return (*this);
 	}
 

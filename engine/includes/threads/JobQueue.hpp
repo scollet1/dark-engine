@@ -1,5 +1,4 @@
-#include "../topo.hpp"
-#include <boost/lockfree/queue>
+#include <boost/lockfree/queue.hpp>
 #include "./Job.hpp"
 
 class JobQueue {
@@ -10,6 +9,10 @@ public:
 	JobQueue& operator=(const JobQueue &rhs) {
 		*this = rhs; return (*this);
 	}
+
+	bool    _Init();
+	bool    _Run();
+	bool    _Destroy();
 
 	/*
 	** atomic boost push() wrapper
@@ -30,5 +33,5 @@ private:
 	*/
 	// TODO : make dynamic
 	boost::lockfree::queue
-	        <std::atomic<*Job>, fixed_sized<true>> job_q {10000};
+	        <std::atomic<*Job>, boost::lockfree::fixed_sized<false>> job_q;
 };

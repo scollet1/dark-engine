@@ -1,22 +1,45 @@
 #include "../includes/engine/Engine.hpp"
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
 	Engine *engine;
+	const char *title;
+	const char *name;
 
-	(void)argc;
-	(void)argv;
+	if (argc == 3) {
+		title = argv[0];
+		name = argv[1];
+	} else {
+		title = "Testing";
+		name = "Test Window";
+	}
 
 	engine = new Engine();
-	if (engine->_Init() == FAILURE)
+	if (engine->_Init(title, name) == FAILURE)
 		return (EXIT_FAILURE);
 
-	g_job_q = new JobQueue();
-	if (g_job_q->_Init(engine->getTpool()->getNumThreads()) == FAILURE)
-		return (engine->getEnv()->_Error(true, -1, __func__, WHICH(g_job_q), "job queue init failed"));
+	/*
+	 * if we're testing render mgr
+	 */
 
+#ifdef UNIT_TEST_RENDERMGR
+	if (engine->getRenderer()._Test() == FAILURE)
+		return (EXIT_FAILURE);
+
+#endif
+
+	/*
+	 * if we're running the engine
+	 */
+
+#ifdef RUN
 	if (engine->_Run() == FAILURE)
 		return (EXIT_FAILURE);
 	if (engine->_Destroy() == FAILURE)
 		return (EXIT_FAILURE);
+
+#else
+	//ignore
+
+#endif
 	return (EXIT_SUCCESS);
 }
