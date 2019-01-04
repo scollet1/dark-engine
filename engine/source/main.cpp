@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
 		name = "Test Window";
 	}
 
+	printf("%s\n%s\n", title, name);
+
 	engine = new Engine();
 	if (engine->_Init(title, name) == FAILURE)
 		return (EXIT_FAILURE);
