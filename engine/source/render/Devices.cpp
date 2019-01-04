@@ -43,8 +43,8 @@ bool						RenderMgr::createLogicalDevice() {
 		throw std::runtime_error("failed to create logical device!");
 	}
 
-	vkGetDeviceQueue(_device, indices.graphicsFamily.second, 0, &graphicsQueue);
-	vkGetDeviceQueue(_device, indices.presentFamily.second, 0, &presentQueue);
+	vkGetDeviceQueue(_device, indices.graphicsFamily.first, 0, &graphicsQueue);
+	vkGetDeviceQueue(_device, indices.presentFamily.first, 0, &presentQueue);
 
 	return (!!_device);
 }
@@ -65,7 +65,7 @@ bool									RenderMgr::checkDeviceExtensionSupport(
 			);
 	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 	for (const auto& extension : availableExtensions) {
-		printf("%s extension\n", extension.extensionName); // no touchy
+		// printf("%s extension\n", extension.extensionName); // no touchy // why though? we'll never know
 		requiredExtensions.erase(extension.extensionName);
 	}
 	printf("required extensions cache %s empty\n", requiredExtensions.empty()?"is":"is not");
@@ -91,7 +91,8 @@ bool									RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
 	bool swapChainAdequate = false;
 	if (extensionsSupported) {
 		SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
-		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+		swapChainAdequate = !swapChainSupport.formats.empty() &&
+							!swapChainSupport.presentModes.empty();
 	}
 	// TODO : OFFSETS!!!
 	printf("swap chain adequate?              | %s%s%s\n",
@@ -133,14 +134,14 @@ bool									RenderMgr::pickPhysicalDevice() {
 	if (deviceCount == 0)
 		throw std::runtime_error("failed to find GPUs with Vulkan support!");
 
-	printf("%s%d%s device%s supported on this system\n",
+	printf("%s%d%s physical device%s supported on this system\n",
 			ANSI_COLOR_BLUE, deviceCount, ANSI_COLOR_RESET, deviceCount > 1? "s":"");
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
 
+	printf("%sexploring physical devices%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
 	for (const auto& device : devices) {
-		printf("%sexploring physical devices%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
 		if (isDeviceSuitable(device)) {
 			printf("%ssuitbale phyiscal device found%s\n", TRUE_STR, ANSI_COLOR_RESET);
 			physicalDevice = device;

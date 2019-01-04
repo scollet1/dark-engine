@@ -67,8 +67,8 @@ bool						RenderMgr::createSwapChain() {
 
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 	uint32_t queueFamilyIndices[] = {
-		indices.graphicsFamily.second,
-		indices.presentFamily.second
+		indices.graphicsFamily.first,
+		indices.presentFamily.first
 	};
 
 	if (indices.graphicsFamily != indices.presentFamily) {

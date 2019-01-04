@@ -490,8 +490,7 @@ bool	RenderMgr::initWindow(const char *title) {
 
 	printf("creating draw window\n");
 	return ((_window = glfwCreateWindow(
-		_screen->width - 100,
-		_screen->height - 100,
+		getScreenWidth(), getScreenHeight(),
 		title, nullptr, nullptr))
 	);
 }
@@ -501,37 +500,46 @@ bool    RenderMgr::_Run() {
 		glfwPollEvents();
 		drawFrame();
 	}
+	vkDeviceWaitIdle(_device);
 	return (SUCCESS);
 }
 
 bool    RenderMgr::_Destroy() {
-	// TODO : create queue of destruction ... bitchin'
-	if (enableValidationLayers) {
-		DestroyDebugUtilsMessengerEXT(_instance, callback, nullptr);
-	}
-	size_t i;
-	for (i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		vkDestroySemaphore(_device, renderFinishedSemaphores[i], nullptr);
-		vkDestroySemaphore(_device, imageAvailableSemaphores[i], nullptr);
-		vkDestroyFence(_device, inFlightFences[i], nullptr);
-	}
-	vkDestroyCommandPool(_device, commandPool, nullptr);
-	for (auto framebuffer : swapChainFramebuffers) {
-		vkDestroyFramebuffer(_device, framebuffer, nullptr);
-	}
-	vkDestroyPipeline(_device, graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(_device, pipelineLayout, nullptr);
-	vkDestroyRenderPass(_device, renderPass, nullptr);
-	for (auto imageView : swapChainImgViews) {
-		vkDestroyImageView(_device, imageView, nullptr);
-	}
-	vkDestroySwapchainKHR(_device, swapChain, nullptr);
-	vkDestroyDevice(_device, nullptr);
-	vkDestroySurfaceKHR(_instance, surface, nullptr);
-	vkDestroyInstance(_instance, nullptr);
-	glfwDestroyWindow(_window);
-	glfwTerminate();
-	return (true);
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(_device, renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(_device, imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(_device, inFlightFences[i], nullptr);
+    }
+
+    vkDestroyCommandPool(_device, commandPool, nullptr);
+
+    for (auto framebuffer : swapChainFramebuffers) {
+        vkDestroyFramebuffer(_device, framebuffer, nullptr);
+    }
+
+    vkDestroyPipeline(_device, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(_device, pipelineLayout, nullptr);
+    vkDestroyRenderPass(_device, renderPass, nullptr);
+
+    for (auto imageView : swapChainImgViews) {
+        vkDestroyImageView(_device, imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(_device, swapChain, nullptr);
+    vkDestroyDevice(_device, nullptr);
+
+    if (enableValidationLayers) {
+        DestroyDebugUtilsMessengerEXT(_instance, callback, nullptr);
+    }
+
+    vkDestroySurfaceKHR(_instance, surface, nullptr);
+    vkDestroyInstance(_instance, nullptr);
+
+    glfwDestroyWindow(_window);
+
+    glfwTerminate();
+	// TODO : create queue of DESTRUCTION ... bitchin'
+	return (SUCCESS);
 }
 
 bool	RenderMgr::getScreenRes() {
@@ -602,9 +610,6 @@ void	RenderMgr::drawFrame() {
 
 bool	RenderMgr::_Test() {
 	printf("entering main test loop\n");
-	while (!glfwWindowShouldClose(_window)) {
-		glfwPollEvents();
-		drawFrame();
-	}
+	_Run();
 	return (SUCCESS);
 }
