@@ -100,25 +100,29 @@ bool						RenderMgr::createSwapChain() {
 }
 
 VkExtent2D						RenderMgr::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
-	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 		return capabilities.currentExtent;
+    } else {
+        int width, height;
+        glfwGetFramebufferSize(_window, &width, &height);
 
-	VkExtent2D actualExtent = {
-			getScreenWidth(),
-			getScreenHeight()
-	};
-	actualExtent.width = std::max(
-			capabilities.minImageExtent.width,
-			std::min(
-					capabilities.maxImageExtent.width,
-					actualExtent.width));
-	actualExtent.height = std::max(
-			capabilities.minImageExtent.height,
-			std::min(
-					capabilities.maxImageExtent.height,
-					actualExtent.height
-					));
-	return actualExtent;
+		VkExtent2D actualExtent = {
+			static_cast<uint32_t>(width),
+			static_cast<uint32_t>(height)
+		};
+		actualExtent.width = std::max(
+				capabilities.minImageExtent.width,
+				std::min(
+						capabilities.maxImageExtent.width,
+						actualExtent.width));
+		actualExtent.height = std::max(
+				capabilities.minImageExtent.height,
+				std::min(
+						capabilities.maxImageExtent.height,
+						actualExtent.height
+						));
+		return actualExtent;
+	}
 }
 
 VkPresentModeKHR				RenderMgr::chooseSwapPresentMode(
@@ -162,4 +166,39 @@ bool							RenderMgr::createImageViews() {
 		}
 	}
 	return (true);
+}
+
+bool	RenderMgr::cleanupSwapChain() {
+	for (size_t i = 0; i < swapChainFramebuffers.size(); i++) {
+        vkDestroyFramebuffer(_device, swapChainFramebuffers[i], nullptr);
+    }
+
+    vkFreeCommandBuffers(_device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+
+    vkDestroyPipeline(_device, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(_device, pipelineLayout, nullptr);
+    vkDestroyRenderPass(_device, renderPass, nullptr);
+
+    for (size_t i = 0; i < swapChainImgViews.size(); i++) {
+        vkDestroyImageView(_device, swapChainImgViews[i], nullptr);
+    }
+
+    vkDestroySwapchainKHR(_device, swapChain, nullptr);
+    return (SUCCESS);
+}
+
+// TODO : continue rendering while generating
+//			new swap chain
+bool	RenderMgr::recreateSwapChain() {
+    vkDeviceWaitIdle(_device);
+
+    cleanupSwapChain();
+
+    createSwapChain();
+    createImageViews();
+    createRenderPass();
+    createGraphicsPipeline();
+    createFramebuffers();
+    createCommandBuffers();
+    return (SUCCESS);
 }
