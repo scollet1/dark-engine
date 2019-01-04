@@ -447,6 +447,12 @@ bool									RenderMgr::createInstance(const char *title, const char *name) {
 	return (!!_instance);
 }
 
+static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+	auto app = reinterpret_cast<RenderMgr*>(glfwGetWindowUserPointer(window));
+	(void)width;
+	(void)height;
+	app->setFrameBufferResized(true);
+}
 
 bool	RenderMgr::initWindow(const char *title) {
 	glfwInit();
@@ -455,10 +461,11 @@ bool	RenderMgr::initWindow(const char *title) {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	printf("creating draw window\n");
-	return ((_window = glfwCreateWindow(
+	_window = glfwCreateWindow(
 		getScreenWidth(), getScreenHeight(),
-		title, nullptr, nullptr))
-	);
+		title, nullptr, nullptr);
+	glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+	return (!!_window);
 }
 
 bool    RenderMgr::_Run() {
@@ -470,7 +477,10 @@ bool    RenderMgr::_Run() {
 	return (SUCCESS);
 }
 
+// TODO : create queue of DESTRUCTION LOL BITCHIN'
 bool    RenderMgr::_Destroy() {
+    cleanupSwapChain();
+
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(_device, renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(_device, imageAvailableSemaphores[i], nullptr);
@@ -479,19 +489,6 @@ bool    RenderMgr::_Destroy() {
 
     vkDestroyCommandPool(_device, commandPool, nullptr);
 
-    for (auto framebuffer : swapChainFramebuffers) {
-        vkDestroyFramebuffer(_device, framebuffer, nullptr);
-    }
-
-    vkDestroyPipeline(_device, graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(_device, pipelineLayout, nullptr);
-    vkDestroyRenderPass(_device, renderPass, nullptr);
-
-    for (auto imageView : swapChainImgViews) {
-        vkDestroyImageView(_device, imageView, nullptr);
-    }
-
-    vkDestroySwapchainKHR(_device, swapChain, nullptr);
     vkDestroyDevice(_device, nullptr);
 
     if (enableValidationLayers) {
@@ -504,8 +501,7 @@ bool    RenderMgr::_Destroy() {
     glfwDestroyWindow(_window);
 
     glfwTerminate();
-	// TODO : create queue of DESTRUCTION ... bitchin'
-	return (SUCCESS);
+    return (SUCCESS);
 }
 
 bool	RenderMgr::getScreenRes() {
@@ -529,18 +525,27 @@ void	RenderMgr::drawFrame() {
 	vkResetFences(_device, 1, &inFlightFences[currentFrame]);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(
+	VkResult res = vkAcquireNextImageKHR(
 			_device, swapChain,
 			std::numeric_limits<uint64_t>::max(),
 			imageAvailableSemaphores[currentFrame],
 			VK_NULL_HANDLE, &imageIndex);
+	// TODO : render old swap chain while still generating new one
+	if (res == VK_ERROR_OUT_OF_DATE_KHR) {
+	    recreateSwapChain();
+	    return;
+	} else if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) {
+	    throw std::runtime_error("failed to acquire swap chain image!");
+	}
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+	// BIG NOTE
 	VkSemaphore waitSemaphores[] = {
 			imageAvailableSemaphores[currentFrame]
 	};
+
 	VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
@@ -549,7 +554,11 @@ void	RenderMgr::drawFrame() {
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
 
-	VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
+	// BIG NOTE
+	VkSemaphore signalSemaphores[] = {
+		renderFinishedSemaphores[currentFrame]
+	};
+
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -569,7 +578,16 @@ void	RenderMgr::drawFrame() {
 
 	presentInfo.pImageIndices = &imageIndex;
 
-	vkQueuePresentKHR(presentQueue, &presentInfo);
+	res = vkQueuePresentKHR(presentQueue, &presentInfo);
+
+	if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
+		framebufferResized = false;
+	    recreateSwapChain();
+	} else if (res != VK_SUCCESS) {
+	    throw std::runtime_error("failed to present swap chain image!");
+	}
+
+	vkQueueWaitIdle(presentQueue);
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
