@@ -125,11 +125,12 @@ private:
         createFramebuffers();
         createCommandPool();
         createCommandBuffers();
-        // createSyncObjects();
+        createSyncObjects();
     }
 
     void mainLoop() {
         while (!glfwWindowShouldClose(window)) {
+            printf("yeet?\n");
             glfwPollEvents();
             drawFrame();
         }

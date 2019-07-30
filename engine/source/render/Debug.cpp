@@ -17,7 +17,7 @@ void									RenderMgr::DestroyDebugUtilsMessengerEXT(
 	
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)
 	vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-	
+
 	if (func != nullptr) {
 		func(instance, callback, pAllocator);
 	}
