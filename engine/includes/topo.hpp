@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdexcept>
 
+#include <array>
 #include <deque>
 #include <functional>
 #include <map>

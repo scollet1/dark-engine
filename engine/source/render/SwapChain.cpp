@@ -66,10 +66,15 @@ bool						RenderMgr::createSwapChain() {
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+	printf("fuck u\n");
+
 	uint32_t queueFamilyIndices[] = {
 		indices.graphicsFamily.first,
 		indices.presentFamily.first
 	};
+
+	printf("fuck u\n");
 
 	if (indices.graphicsFamily != indices.presentFamily) {
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -80,16 +85,20 @@ bool						RenderMgr::createSwapChain() {
 		createInfo.queueFamilyIndexCount = 0; // Optional
 		createInfo.pQueueFamilyIndices = nullptr; // Optional
 	}
+	printf("fuck u\n");
+
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	printf("fuck u\n");
 
 	if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
 	}
+	printf("fuck u\n");
 
 	vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
 	swapChainImages.resize(imageCount);
@@ -144,24 +153,27 @@ VkPresentModeKHR				RenderMgr::chooseSwapPresentMode(
 bool							RenderMgr::createImageViews() {
 	printf("creating image views\n");
 
-	swapChainImgViews.resize(swapChainImages.size());
+	swapChainImageViews.resize(swapChainImages.size());
 	for (size_t i = 0; i < swapChainImages.size(); i++) {
 		VkImageViewCreateInfo createInfo = {};
+		
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		createInfo.image = swapChainImages[i];
-		// TODO
 		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		createInfo.format = swapChainImageFormat;
+		
 		createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		
 		createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		createInfo.subresourceRange.baseMipLevel = 0;
 		createInfo.subresourceRange.levelCount = 1;
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
-		if (vkCreateImageView(_device, &createInfo, nullptr, &swapChainImgViews[i]) != VK_SUCCESS) {
+
+		if (vkCreateImageView(_device, &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create image views!");
 		}
 	}
@@ -169,27 +181,35 @@ bool							RenderMgr::createImageViews() {
 }
 
 bool	RenderMgr::cleanupSwapChain() {
-	for (size_t i = 0; i < swapChainFramebuffers.size(); i++) {
-        vkDestroyFramebuffer(_device, swapChainFramebuffers[i], nullptr);
-    }
+	for (auto framebuffer : swapChainFramebuffers) {
+	    vkDestroyFramebuffer(_device, framebuffer, nullptr);
+	}
 
-    vkFreeCommandBuffers(_device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+	vkFreeCommandBuffers(_device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 
-    vkDestroyPipeline(_device, graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(_device, pipelineLayout, nullptr);
-    vkDestroyRenderPass(_device, renderPass, nullptr);
+	vkDestroyPipeline(_device, graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(_device, pipelineLayout, nullptr);
+	vkDestroyRenderPass(_device, renderPass, nullptr);
 
-    for (size_t i = 0; i < swapChainImgViews.size(); i++) {
-        vkDestroyImageView(_device, swapChainImgViews[i], nullptr);
-    }
+	for (auto imageView : swapChainImageViews) {
+	    vkDestroyImageView(_device, imageView, nullptr);
+	}
 
-    vkDestroySwapchainKHR(_device, swapChain, nullptr);
+	vkDestroySwapchainKHR(_device, swapChain, nullptr);
+	
     return (SUCCESS);
 }
 
 // TODO : continue rendering while generating
 //			new swap chain
 bool	RenderMgr::recreateSwapChain() {
+	int width = 0, height = 0;
+    
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(_window, &width, &height);
+        glfwWaitEvents();
+    }
+
     vkDeviceWaitIdle(_device);
 
     cleanupSwapChain();

@@ -1,7 +1,6 @@
-NAME = TopoEngine
+NAME = DarkEngine
 
-TEST := $(if $(TARGET),\
-			$(TARGET),RUN)
+TEST := $(if $(TARGET),$(TARGET),RUN)
 
 CC = g++
 
@@ -21,6 +20,7 @@ LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 
 # MINILIB = ./mini_lib/
 
+# SRC_FILES = render/testing/testengine.cpp
 SRC_FILES = engine/Engine.cpp   \
 			engine/Environ.cpp  \
 			engine/game/Game.cpp\
