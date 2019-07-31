@@ -7,6 +7,16 @@
 //#include "wtypes.h"
 #include <X11/Xlib.h>
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
 #endif
@@ -76,6 +86,12 @@ Vertex.h/cpp
 */
 #include <glm/glm.hpp>
 
+struct UniformBufferObject {
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
+};
+
 struct Vertex {
 	glm::vec2 pos;
 	glm::vec3 color;
@@ -108,9 +124,10 @@ struct Vertex {
 };
 
 const std::vector<Vertex> vertices = {
-    {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 };
 
 const std::vector<uint16_t> indices = {
@@ -181,9 +198,13 @@ private:
 	bool									createImageViews();
 	void									createSemaphores();
 	static void								framebufferResizeCallback(GLFWwindow* window, int width, int height);
-
+	bool createUniformBuffers();
+	bool createDescriptorPool();
+	void updateUniformBuffer(uint32_t currentImage);
 	VkShaderModule							createShaderModule(const std::vector<char>& code);
-
+	bool createDescriptorSetLayout();
+	bool createDescriptorSets();
+	bool 									createIndexBuffer();
 	bool									pickPhysicalDevice();
 	int										rateDeviceSuitability(VkPhysicalDevice device);
 	bool									isDeviceSuitable(VkPhysicalDevice device);
@@ -196,6 +217,12 @@ private:
 	bool 									createSyncObjects();
 	bool									setupDebugCallback();
 	bool 									createVertexBuffer();
+VkCommandBuffer beginSingleTimeCommands();
+bool createTextureImageView();
+bool createTextureSampler();
+	bool createTextureImage();
+VkImageView createImageView(VkImage image, VkFormat format);
+void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	bool  									copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	uint32_t 								findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	static VKAPI_ATTR VkBool32 VKAPI_CALL 	debugCallback(
@@ -240,19 +267,26 @@ private:
 
     VkPhysicalDevice 					physicalDevice = VK_NULL_HANDLE;
     VkDevice 							_device;
-
     VkQueue 							graphicsQueue;
     VkQueue 							presentQueue;
-
+	VkDescriptorPool descriptorPool;
+	std::vector<VkDescriptorSet> descriptorSets;
     VkDebugUtilsMessengerEXT debugMessenger;
 	VkDeviceMemory vertexBufferMemory;
+	VkImage textureImage;
+	VkDeviceMemory textureImageMemory;
     VkSwapchainKHR 						swapChain;
     std::vector<VkImage> 				swapChainImages;
     VkFormat 							swapChainImageFormat;
     VkExtent2D 							swapChainExtent;
     std::vector<VkImageView> 			swapChainImageViews;
     std::vector<VkFramebuffer> 			swapChainFramebuffers;
+    VkImageView textureImageView;
+VkSampler textureSampler;
 
+	std::vector<VkBuffer> uniformBuffers;
+	std::vector<VkDeviceMemory> uniformBuffersMemory;
+	VkDescriptorSetLayout descriptorSetLayout;
     VkRenderPass 						renderPass;
     VkPipelineLayout 					pipelineLayout;
     VkPipeline 							graphicsPipeline;

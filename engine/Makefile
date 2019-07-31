@@ -11,10 +11,11 @@ ARCHITECTURE = x86_64
 # TODO : make dynamic
 VK_VERSION = 1.1.92.1
 VK_PATH = ./VulkanSDK/$(VK_VERSION)/$(ARCHITECTURE)
+STB_INCLUDE_PATH = stb/
 
-INCL = -I ./includes/ -I $(VK_PATH)/include/
+INCL = -I ./includes/ -I $(VK_PATH)/include/ -I$(STB_INCLUDE_PATH)
 
-CFLAGS  = -Wall -Werror -Wextra -g
+CFLAGS  = -Wall -Wextra -g # -Werror 
 
 LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 
