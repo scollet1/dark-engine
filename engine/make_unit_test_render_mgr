@@ -1,2 +1,2 @@
 #!/bin/bash
-make re TARGET=UNIT_TEST_RENDERMGRE
+make re TARGET=UNIT_TEST_RENDERMGR
