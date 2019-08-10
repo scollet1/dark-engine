@@ -6,20 +6,20 @@
  */
 //#include "wtypes.h"
 #include <X11/Xlib.h>
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <chrono>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 
 #ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 #endif
+
+#ifndef GLM_FORCE_RADIANS
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#endif 
+
+#include <stb_image.h>
 
 #ifndef SCRNWOFFS
 #define SCRNWOFFS -100
@@ -186,6 +186,7 @@ private:
 	bool									createFramebuffers();
 	bool									createCommandPool();
 	bool									createCommandBuffers();
+void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 	bool									createSurface();
 	bool									createSwapChain();
@@ -217,6 +218,8 @@ private:
 	bool 									createSyncObjects();
 	bool									setupDebugCallback();
 	bool 									createVertexBuffer();
+void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 VkCommandBuffer beginSingleTimeCommands();
 bool createTextureImageView();
 bool createTextureSampler();
