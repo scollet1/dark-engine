@@ -5,15 +5,16 @@ TEST := $(if $(TARGET),$(TARGET),RUN)
 CC = g++
 
 SRC_DIR = source
+INC_DIR = includes
 
 # -fsanitize=address
 ARCHITECTURE = x86_64
 # TODO : make dynamic
 VK_VERSION = 1.1.92.1
 VK_PATH = ./VulkanSDK/$(VK_VERSION)/$(ARCHITECTURE)
-STB_INCLUDE_PATH = stb/
+STB_INCLUDE_PATH = ./stb/
 
-INCL = -I ./includes/ -I $(VK_PATH)/include/ -I$(STB_INCLUDE_PATH)
+INCL = -I $(INC_DIR) -I$(VK_PATH)/include/ -I$(STB_INCLUDE_PATH)
 
 CFLAGS  = -Wall -Wextra -g # -Werror 
 
@@ -21,7 +22,7 @@ LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 
 # MINILIB = ./mini_lib/
 
-# SRC_FILES = render/testing/testengine.cpp
+# SRC_FILES = testing/testengine.cpp
 SRC_FILES = engine/Engine.cpp   \
 			engine/Environ.cpp  \
 			engine/game/Game.cpp\
