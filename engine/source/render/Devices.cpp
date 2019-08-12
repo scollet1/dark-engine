@@ -24,6 +24,7 @@ bool						RenderMgr::createLogicalDevice() {
 	
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -105,8 +106,11 @@ bool									RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
 		swapChainAdequate? "TRUE":"FALSE",
 		ANSI_COLOR_RESET);
 
-	return indices.isComplete() && extensionsSupported && swapChainAdequate;
-//	return (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+	VkPhysicalDeviceFeatures supportedFeatures;
+    vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+    return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+    //	return (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
 //		   deviceFeatures.geometryShader);
 }
 

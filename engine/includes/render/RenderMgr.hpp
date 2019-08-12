@@ -1,3 +1,6 @@
+#ifndef RENDERMGR_H
+#define RENDERMGR_H
+
 #include "../topo.hpp"
 #include <optional>
 #include <boost/optional.hpp>
@@ -17,9 +20,7 @@
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#endif 
-
-#include <stb_image.h>
+#endif
 
 #ifndef SCRNWOFFS
 #define SCRNWOFFS -100
@@ -329,3 +330,5 @@ VkSampler textureSampler;
 #endif
 
 };
+
+#endif // RENDERMGR_H
