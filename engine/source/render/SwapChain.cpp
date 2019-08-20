@@ -67,14 +67,14 @@ bool						RenderMgr::createSwapChain() {
 
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
-	printf("fuck u\n");
+	printf("fuck u 1\n");
 
 	uint32_t queueFamilyIndices[] = {
 		indices.graphicsFamily.first,
 		indices.presentFamily.first
 	};
 
-	printf("fuck u\n");
+	printf("fuck u 2\n");
 
 	if (indices.graphicsFamily != indices.presentFamily) {
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -85,7 +85,7 @@ bool						RenderMgr::createSwapChain() {
 		createInfo.queueFamilyIndexCount = 0; // Optional
 		createInfo.pQueueFamilyIndices = nullptr; // Optional
 	}
-	printf("fuck u\n");
+	printf("fuck u 3\n");
 
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
@@ -93,18 +93,21 @@ bool						RenderMgr::createSwapChain() {
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
-	printf("fuck u\n");
+	printf("fuck u 4\n");
 
 	if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
 	}
-	printf("fuck u\n");
+	printf("fuck u 5\n");
 
 	vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
 	swapChainImages.resize(imageCount);
 	vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, swapChainImages.data());
 	swapChainImageFormat = surfaceFormat.format;
 	swapChainExtent = extent;
+
+	printf("fuck u 6\n");
+
 	return (SUCCESS);
 }
 
@@ -151,11 +154,15 @@ VkPresentModeKHR				RenderMgr::chooseSwapPresentMode(
 }
 
 bool RenderMgr::createImageViews() {
-    swapChainImageViews.resize(swapChainImages.size());
+	// printf("%i\n", swapChainImages.size());
+	swapChainImageViews.resize(swapChainImages.size());
+	// printf("%i\n", swapChainImages.size());
 
-    for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat);
-    }
+	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+		swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat);
+	}
+
+	return true;
 }
 
 bool	RenderMgr::cleanupSwapChain() {
@@ -186,43 +193,44 @@ bool	RenderMgr::cleanupSwapChain() {
 }
 
 bool RenderMgr::createDescriptorSets() {
-	std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
-	VkDescriptorSetAllocateInfo allocInfo = {};
-	
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChainImages.size());
-	allocInfo.pSetLayouts = layouts.data();
+        std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
+        VkDescriptorSetAllocateInfo allocInfo = {};
+        printf("no\n");
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = descriptorPool;
+        allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChainImages.size());
+        allocInfo.pSetLayouts = layouts.data();
+        printf("noo\n");
 
-	descriptorSets.resize(swapChainImages.size());
-	if (vkAllocateDescriptorSets(
-		_device, &allocInfo, descriptorSets.data()) != VK_SUCCESS
-	) {
-		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
+        descriptorSets.resize(swapChainImages.size());
 
-	for (size_t i = 0; i < swapChainImages.size(); i++) {
-		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = uniformBuffers[i];
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBufferObject);
-		
-		VkWriteDescriptorSet descriptorWrite = {};
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = descriptorSets[i];
-		descriptorWrite.dstBinding = 0;
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pBufferInfo = &bufferInfo;
-		descriptorWrite.pImageInfo = nullptr; // Optional
-		descriptorWrite.pTexelBufferView = nullptr; // Optional
+        printf("nooo\n");
+        if (vkAllocateDescriptorSets(_device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate descriptor sets!");
+        }
+        printf("noooo\n");
+        
+        for (size_t i = 0; i < swapChainImages.size(); i++) {
+            VkDescriptorBufferInfo bufferInfo = {};
+            bufferInfo.buffer = uniformBuffers[i];
+            bufferInfo.offset = 0;
+            bufferInfo.range = sizeof(UniformBufferObject);
 
-		vkUpdateDescriptorSets(_device, 1, &descriptorWrite, 0, nullptr);
-	}
+            VkWriteDescriptorSet descriptorWrite = {};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = descriptorSets[i];
+            descriptorWrite.dstBinding = 0;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.pBufferInfo = &bufferInfo;
 
-	return (SUCCESS);
-}
+            vkUpdateDescriptorSets(_device, 1, &descriptorWrite, 0, nullptr);
+        printf("noooo\n");
+        }
+        printf("nooooo\n");
+        return SUCCESS;
+    }
 
 // TODO : continue rendering while generating
 //			new swap chain
@@ -237,8 +245,10 @@ bool	RenderMgr::recreateSwapChain() {
     vkDeviceWaitIdle(_device);
 
     cleanupSwapChain();
-
+    printf("create swap re\n");
     createSwapChain();
+    printf("done create swap re\n");
+
     createImageViews();
     createRenderPass();
     createGraphicsPipeline();
