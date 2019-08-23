@@ -79,11 +79,7 @@ bool									RenderMgr::checkDeviceExtensionSupport(
 	return (true);
 }
 
-bool									RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
-//	VkPhysicalDeviceProperties deviceProperties;
-//	VkPhysicalDeviceFeatures deviceFeatures;
-//	vkGetPhysicalDeviceProperties(device, &deviceProperties);
-//	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+bool	RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
 	printf("checking device suitability\n");
 
 	QueueFamilyIndices indices = findQueueFamilies(device);
@@ -109,7 +105,10 @@ bool									RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
 	VkPhysicalDeviceFeatures supportedFeatures;
     vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-    return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+    return indices.isComplete() &&
+    		extensionsSupported &&
+    		swapChainAdequate &&
+    		supportedFeatures.samplerAnisotropy;
     //	return (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
 //		   deviceFeatures.geometryShader);
 }
