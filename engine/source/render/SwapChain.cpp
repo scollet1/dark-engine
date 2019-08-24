@@ -159,13 +159,21 @@ bool RenderMgr::createImageViews() {
 	// printf("%i\n", swapChainImages.size());
 
 	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-		swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat);
+		swapChainImageViews[i] = createImageView(
+			swapChainImages[i],
+			swapChainImageFormat,
+			VK_IMAGE_ASPECT_COLOR_BIT
+		);
 	}
 
 	return true;
 }
 
 bool	RenderMgr::cleanupSwapChain() {
+    vkDestroyImageView(_device, depthImageView, nullptr);
+    vkDestroyImage(_device, depthImage, nullptr);
+    vkFreeMemory(_device, depthImageMemory, nullptr);
+
 	for (auto framebuffer : swapChainFramebuffers) {
 	    vkDestroyFramebuffer(_device, framebuffer, nullptr);
 	}
@@ -259,6 +267,7 @@ bool	RenderMgr::recreateSwapChain() {
     createImageViews();
     createRenderPass();
     createGraphicsPipeline();
+    createDepthResources();
     createFramebuffers();
     createUniformBuffers();
     createDescriptorPool();
