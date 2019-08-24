@@ -13,8 +13,9 @@ ARCHITECTURE = x86_64
 VK_VERSION = 1.1.92.1
 VK_PATH = ./VulkanSDK/$(VK_VERSION)/$(ARCHITECTURE)
 STB_INCLUDE_PATH = ./stb/
+TOBJ_INCLUDE_PATH = ./tiny_obj_loader
 
-INCL = -I $(INC_DIR) -I$(VK_PATH)/include/ -I$(STB_INCLUDE_PATH)
+INCL = -I $(INC_DIR) -I$(VK_PATH)/include/ -I$(STB_INCLUDE_PATH) -I$(TOBJ_INCLUDE_PATH)
 
 CFLAGS  = -Wall -Wextra -g # -Werror 
 
