@@ -943,7 +943,7 @@ void RenderMgr::createImage(
     vkBindImageMemory(_device, image, imageMemory, 0);
 }
 
-void generateMipmaps(
+void RenderMgr::generateMipmaps(
 	VkImage image, VkFormat imageFormat,
 	int32_t texWidth, int32_t texHeight,
 	uint32_t mipLevels
@@ -1165,7 +1165,7 @@ bool RenderMgr::createDepthResources() {
 		depthImage, depthImageMemory
 	);
 	depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
-	transitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+	transitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
 	return SUCCESS;
 }
 
