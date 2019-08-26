@@ -3,4 +3,6 @@ git submodule update --init --recursive
 git submodule update --recursive --remote
 
 sudo apt-get install libboost-all-dev
-wget -c https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/1.1.92.1/linux/vulkansdk-linux-x86_64-1.1.92.1.tar.gz -O - | tar -xz
+mkdir VulkanSDK && cd VulkanSDK
+wget -c https://sdk.lunarg.com/sdk/download/1.1.92.1/linux/vulkansdk-linux-1.1.92.1.tar.gz -O - | tar -xz
+cd ..
