@@ -142,7 +142,11 @@ struct Vertex {
 namespace std {
     template<> struct hash<Vertex> {
         size_t operator()(Vertex const& vertex) const {
-            return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+            return (
+            	((hash<glm::vec3>()(vertex.pos) ^
+            	(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
+            	(hash<glm::vec2>()(vertex.texCoord) << 1)
+        	);
         }
     };
 }
@@ -196,7 +200,7 @@ private:
 	bool									createInstance(const char *title, const char *name);
 	bool									createGraphicsPipeline();
 	bool									createRenderPass();
-	bool									createFramebuffers();
+	bool									createFrameBuffers();
 	bool									createCommandPool();
 	bool									createCommandBuffers();
 void endSingleTimeCommands(VkCommandBuffer commandBuffer);
@@ -218,6 +222,7 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 	VkShaderModule							createShaderModule(const std::vector<char>& code);
 	bool createDescriptorSetLayout();
 	bool createDescriptorSets();
+VkSampleCountFlagBits getMaxUsableSampleCount();
 	bool 									createIndexBuffer();
 	bool									pickPhysicalDevice();
 	int										rateDeviceSuitability(VkPhysicalDevice device);
@@ -239,14 +244,15 @@ VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTil
 	bool createTextureImageView();
 	bool createTextureSampler();
 	bool createTextureImage();
-VkFormat findDepthFormat();
-void loadModel();
-bool hasStencilComponent(VkFormat format);
-VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+	void createColorResources();
+	VkFormat findDepthFormat();
+	void loadModel();
+	bool hasStencilComponent(VkFormat format);
+	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-	bool  									copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+	bool copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	uint32_t 								findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-	static VKAPI_ATTR VkBool32 VKAPI_CALL 	debugCallback(
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 			VkDebugUtilsMessageTypeFlagsEXT messageType,
 			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -297,7 +303,12 @@ VkImageView depthImageView;
     VkExtent2D 							swapChainExtent;
     std::vector<VkImageView> 			swapChainImageViews;
     std::vector<VkFramebuffer> 			swapChainFramebuffers;
+    VkImage colorImage;
+VkDeviceMemory colorImageMemory;
+VkImageView colorImageView;
     VkImageView textureImageView;
+    uint32_t mipLevels;
+VkImage textureImage;
 	VkSampler textureSampler;
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -317,6 +328,8 @@ VkImageView depthImageView;
     std::vector<VkSemaphore> 			imageAvailableSemaphores;
     std::vector<VkSemaphore> 			renderFinishedSemaphores;
     std::vector<VkFence> 				inFlightFences;
+
+	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
     size_t 								currentFrame = 0;
     bool 								framebufferResized = false;
 
