@@ -25,6 +25,7 @@ bool						RenderMgr::createLogicalDevice() {
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
+    deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -149,13 +150,13 @@ bool									RenderMgr::pickPhysicalDevice() {
 	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
 
 	printf("%sexploring physical devices%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
-	for (const auto& device : devices) {
-		if (isDeviceSuitable(device)) {
-			printf("%ssuitbale phyiscal device found%s\n", TRUE_STR, ANSI_COLOR_RESET);
-			physicalDevice = device;
-			break;
-		}
-	}
+    for (const auto& device : devices) {
+        if (isDeviceSuitable(device)) {
+            physicalDevice = device;
+            msaaSamples = getMaxUsableSampleCount();
+            break;
+        }
+    }
 
 	// printf("physical device is a thing?       | %s%s%s\n",
 		// (physicalDevice == VK_NULL_HANDLE)? FALSE_STR:TRUE_STR,

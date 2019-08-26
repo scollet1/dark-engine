@@ -160,9 +160,8 @@ bool RenderMgr::createImageViews() {
 
 	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
 		swapChainImageViews[i] = createImageView(
-			swapChainImages[i],
-			swapChainImageFormat,
-			VK_IMAGE_ASPECT_COLOR_BIT
+			swapChainImages[i], swapChainImageFormat,
+			VK_IMAGE_ASPECT_COLOR_BIT, 1
 		);
 	}
 
@@ -170,9 +169,9 @@ bool RenderMgr::createImageViews() {
 }
 
 bool	RenderMgr::cleanupSwapChain() {
-    vkDestroyImageView(_device, depthImageView, nullptr);
-    vkDestroyImage(_device, depthImage, nullptr);
-    vkFreeMemory(_device, depthImageMemory, nullptr);
+    vkDestroyImageView(_device, colorImageView, nullptr);
+    vkDestroyImage(_device, colorImage, nullptr);
+    vkFreeMemory(_device, colorImageMemory, nullptr);
 
 	for (auto framebuffer : swapChainFramebuffers) {
 	    vkDestroyFramebuffer(_device, framebuffer, nullptr);
@@ -267,8 +266,9 @@ bool	RenderMgr::recreateSwapChain() {
     createImageViews();
     createRenderPass();
     createGraphicsPipeline();
+    createColorResources();
     createDepthResources();
-    createFramebuffers();
+    createFrameBuffers();
     createUniformBuffers();
     createDescriptorPool();
     createDescriptorSets();
