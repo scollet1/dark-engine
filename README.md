@@ -1,6 +1,6 @@
 # dark-engine
 
-![What we got so far!](https://imgur.com/hFDuzqr)
+![What we got so far!](https://i.imgur.com/hFDuzqr.png)
 
 need to sync with dev rendering
 
