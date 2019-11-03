@@ -1,4 +1,7 @@
 # dark-engine
+
+![What we got so far!](https://imgur.com/hFDuzqr)
+
 need to sync with dev rendering
 
  - [ ] need to automate/test dep curl & install
