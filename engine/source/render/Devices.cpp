@@ -2,7 +2,6 @@
 
 bool						RenderMgr::createLogicalDevice() {
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-	printf("fuck u\n");
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	std::set<uint32_t> uniqueQueueFamilies = {
@@ -20,8 +19,6 @@ bool						RenderMgr::createLogicalDevice() {
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	printf("fuck u\n");
-	
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -44,7 +41,6 @@ bool						RenderMgr::createLogicalDevice() {
 	} else {
 		createInfo.enabledLayerCount = 0;
 	}
-	printf("fuck u\n");
 
 	if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create logical device!");

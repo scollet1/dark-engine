@@ -286,8 +286,6 @@ bool RenderMgr::createCommandBuffers() {
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t) commandBuffers.size();
 
-	printf("yysaal\n");
-
 	if (vkAllocateCommandBuffers(_device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
 	    throw std::runtime_error("failed to allocate command buffers!");
 	}
@@ -295,8 +293,6 @@ bool RenderMgr::createCommandBuffers() {
 	for (size_t i = 0; i < commandBuffers.size(); i++) {
 	    VkCommandBufferBeginInfo beginInfo = {};
 	    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-		printf("yysaal\n");
 
 	    if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
 	        throw std::runtime_error("failed to begin recording command buffer!");
@@ -316,42 +312,27 @@ bool RenderMgr::createCommandBuffers() {
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassInfo.pClearValues = clearValues.data();
 
-		printf("yysaal\n");
-
 	    vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-		printf("yysaal1\n");
-
 	        vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-		printf("yysaal2\n");
-
 	        VkBuffer vertexBuffers[] = {vertexBuffer};
 	        VkDeviceSize offsets[] = {0};
 	        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-		printf("yysaal3\n");
-
 	        vkCmdBindIndexBuffer(
 	        	commandBuffers[i], indexBuffer,
 	        	0, VK_INDEX_TYPE_UINT32
 	        );
-		printf("yysaal4\n");
-
 	        vkCmdBindDescriptorSets(
 	        	commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
 	        	pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr
 	        );
 
-		printf("yysaal5\n");
 		// printf("%i %i\n", indices.size(), i);
 	        vkCmdDrawIndexed(
 	        	commandBuffers[i],
 	        	static_cast<uint32_t>(indices.size()),
 	        	1, 0, 0, 0
 	        );
-		printf("yysaal6\n");
-
 	    vkCmdEndRenderPass(commandBuffers[i]);
-
-		printf("yysaal7\n");
 
 	    if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
 	        throw std::runtime_error("failed to record command buffer!");
@@ -366,8 +347,6 @@ bool							RenderMgr::createCommandPool() {
 	QueueFamilyIndices			qfi = findQueueFamilies(physicalDevice);
 	VkCommandPoolCreateInfo		poolInfo = {};
 	
-	printf("lol\n");
-
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.queueFamilyIndex = qfi.graphicsFamily.second;
 	poolInfo.flags = 0; // Optional
@@ -377,7 +356,6 @@ bool							RenderMgr::createCommandPool() {
 		throw std::runtime_error("failed to create command pool!");
 		return(FAILURE);
 	}
-	printf("ok\n");
 
 	return (SUCCESS);
 }
@@ -1041,14 +1019,10 @@ bool RenderMgr::createTextureImage() {
 	);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-	printf("yeeee\n");
 
 	if (!pixels) {
 		throw std::runtime_error("failed to load texture image!");
 	}
-
-	printf("yeeee\n");
-
 
 	VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -1059,15 +1033,11 @@ bool RenderMgr::createTextureImage() {
 		stagingBuffer, stagingBufferMemory
 	);
 
-	printf("yeeee\n");
-
 	void* data;
 	vkMapMemory(_device, stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, pixels, static_cast<size_t>(imageSize));
 	vkUnmapMemory(_device, stagingBufferMemory);
 
-	printf("yeeee\n");
-	
 	stbi_image_free(pixels);
 
 	createImage(
@@ -1082,17 +1052,11 @@ bool RenderMgr::createTextureImage() {
 		textureImage, textureImageMemory
 	);
 
-	printf("yeeee\n");
-
     transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
     copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
-	printf("yeeee\n");
-
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
-
-	printf("yeeee\n");
 
 	return (SUCCESS);
 }
@@ -1185,14 +1149,10 @@ VkImageView RenderMgr::createImageView(
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    printf("bluooup\n");
-
     VkImageView imageView;
     if (vkCreateImageView(_device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture image view!");
     }
-
-    printf("bluuuup\n");
 
     return imageView;
 }
@@ -1351,18 +1311,12 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
 
 	if (createImageViews() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 0\n");
-
 	if (createRenderPass() == FAILURE)
 		return (FAILURE);	// render pass
-    printf("wowoza 0.1\n");
 	if (createDescriptorSetLayout() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 0.2\n");
 	if (createGraphicsPipeline() == FAILURE)
 		return (FAILURE); // pipeline
-    printf("wowoza 0.3\n");
-    printf("wowoza 0.4\n");
 	if (createCommandPool() == FAILURE)
 		return (FAILURE);
     createColorResources();
@@ -1372,41 +1326,25 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
 		return (FAILURE);	// frame buffers
 	if (createTextureImage() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 1.1\n");
-
     if (createTextureImageView() == FAILURE)
     	return (FAILURE);
-    printf("wowoza 2\n");
     if (createTextureSampler() == FAILURE)
     	return (FAILURE);
-    printf("wowoza 2.1\n");
-    
+
     loadModel();
 	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 2.2\n");
-	
 	if (createIndexBuffer() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 2.3\n");
-	
 	if (createUniformBuffers() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 2.4\n");
-	
 	if (createDescriptorPool() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 2.5\n");
-
 	if (createDescriptorSets() == FAILURE)
 		return (FAILURE);
-    printf("wowoza 2.6\n");
-	
 	if (createCommandBuffers() == FAILURE)
 		return (FAILURE);	// command buffers
-    printf("wowoza 2.7\n");
-	
 	if (createSyncObjects() == FAILURE)
 		return (FAILURE);
 
