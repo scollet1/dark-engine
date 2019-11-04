@@ -116,7 +116,7 @@ VkExtent2D						RenderMgr::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capa
 		return capabilities.currentExtent;
     } else {
         int width, height;
-        glfwGetFramebufferSize(_window, &width, &height);
+        glfwGetFramebufferSize(dark_engine.get_window(), &width, &height);
 
 		VkExtent2D actualExtent = {
 			static_cast<uint32_t>(width),
@@ -252,7 +252,7 @@ bool	RenderMgr::recreateSwapChain() {
 	int width = 0, height = 0;
     
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(_window, &width, &height);
+        glfwGetFramebufferSize(dark_engine.get_window(), &width, &height);
         glfwWaitEvents();
     }
 
