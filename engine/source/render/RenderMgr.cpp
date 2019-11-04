@@ -329,6 +329,14 @@ bool RenderMgr::createCommandBuffers() {
 		// printf("%i %i\n", indices.size(), i);
 	        vkCmdDrawIndexed(
 	        	commandBuffers[i],
+	        	/*
+	        	BIG TODO: indices hand-off from the
+	        	current scene
+
+	        	renderMgr will have access to the scene
+	        	graph, but ONLY the currently instanced
+	        	scene
+	        	*/
 	        	static_cast<uint32_t>(indices.size()),
 	        	1, 0, 0, 0
 	        );
@@ -692,43 +700,6 @@ bool									RenderMgr::createInstance(const char *title, const char *name) {
 		throw std::runtime_error("failed to create instance!");
 	}
 	return (!!_instance);
-}
-
-void				RenderMgr::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-	auto app = reinterpret_cast<RenderMgr*>(glfwGetWindowUserPointer(window));
-	(void)width;
-	(void)height;
-	app->setFrameBufferResized(true);
-}
-
-bool	RenderMgr::initWindow(const char *title) {
-	glfwInit();
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	printf("creating draw window\n");
-	_window = glfwCreateWindow(
-		getScreenWidth(), getScreenHeight(),
-		title, nullptr, nullptr);
-	glfwSetWindowUserPointer(_window, this);
-	glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-	return (!!_window);
-}
-
-bool	RenderMgr::getScreenRes() {
-//	// Get a handle to the desktop window
-//	const HWND hDesktop;
-//
-//	hDesktop = GetDesktopWindow();
-//	// Get the size of screen to the variable desktop
-//	GetWindowRect(hDesktop, &desktop);
-//	// The top left corner will have coordinates (0,0)
-//	// and the bottom right corner will have coordinates
-//	// (horizontal, vertical)
-	_display = XOpenDisplay(NULL);
-	_screen = DefaultScreenOfDisplay(_display);
-	return (true);
 }
 
 void RenderMgr::updateUniformBuffer(uint32_t currentImage) {
@@ -1206,47 +1177,6 @@ bool RenderMgr::createTextureImageView() {
     return true;
 }
 
-void RenderMgr::loadModel() {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string warn, err;
-
-    if (!tinyobj::LoadObj(
-    	&attrib, &shapes, &materials,
-    	&warn, &err, MODEL_PATH.c_str())
-	) {
-        throw std::runtime_error(warn + err);
-    }
-
-	std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
-	for (const auto& shape : shapes) {
-	    for (const auto& index : shape.mesh.indices) {
-	        Vertex vertex = {};
-	        
-            vertex.pos = {
-                attrib.vertices[3 * index.vertex_index + 0],
-                attrib.vertices[3 * index.vertex_index + 1],
-                attrib.vertices[3 * index.vertex_index + 2]
-            };
-
-            vertex.texCoord = {
-                attrib.texcoords[2 * index.texcoord_index + 0],
-                1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-            };
-
-            vertex.color = {1.0f, 1.0f, 1.0f};
-
-	        if (uniqueVertices.count(vertex) == 0) {
-	            uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-	            vertices.push_back(vertex);
-	        }
-
-	        indices.push_back(uniqueVertices[vertex]);
-	    }
-	}
-}
-
 // TODO : create queue of DESTRUCTION
 bool    RenderMgr::_Destroy() {
 	cleanupSwapChain();
@@ -1280,7 +1210,7 @@ bool    RenderMgr::_Destroy() {
 	vkDestroySurfaceKHR(_instance, surface, nullptr);
 	vkDestroyInstance(_instance, nullptr);
 
-	glfwDestroyWindow(_window);
+	glfwDestroyWindow(dark_engine.get_window());
 
 	glfwTerminate();
 
@@ -1289,10 +1219,6 @@ bool    RenderMgr::_Destroy() {
 
 bool    RenderMgr::_Init(const char *title, const char *name) {
 	// TODO : make dynamic
-	if (getScreenRes() == FAILURE)
-		return (FAILURE);
-	if (initWindow(name) == FAILURE)
-		return (FAILURE);
 	if (createInstance(title, name) == FAILURE)	// instance
 		return (FAILURE);
 	if (setupDebugCallback() == FAILURE)
@@ -1331,7 +1257,7 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
     if (createTextureSampler() == FAILURE)
     	return (FAILURE);
 
-    loadModel();
+    // loadModel(); // moved to AssetQueue.cpp
 	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);
@@ -1356,7 +1282,7 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
 }
 
 bool    RenderMgr::_Run() {
-	while (!glfwWindowShouldClose(_window)) {
+	while (!glfwWindowShouldClose(dark_engine.get_window())) {
 		glfwPollEvents();
 		drawFrame();
 	}
