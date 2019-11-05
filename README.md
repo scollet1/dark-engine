@@ -3,7 +3,7 @@
 ![What we got so far!](https://i.imgur.com/hFDuzqr.png)
 
 # To Install
- - git clone repo
+ - `git clone https://github.com/scollet1/dark-engine.git`
  - `cd dark-engine/engine`
  - `./config`
 
