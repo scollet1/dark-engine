@@ -1,4 +1,4 @@
-class InputEventManager {
+class InputManager : EventManager {
 private:
 	/*
 	privately-linked mouse callback. Link engine builtins to userspace logic to call
