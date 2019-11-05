@@ -3,8 +3,14 @@
    - [ ] need to figure out config options, check comments in /InputManager.cpp/hpp files
 
 # Rendering
+## Assets
+ - [ ] build asset schema
+ - [ ] build asset file layout
+
 ## Contexts
 ### Scenes
+ - [ ] scene build graph of pointers to scene tree
+   - [ ] root is always the current scene
 
 # Physics
 Not sure where to start here
