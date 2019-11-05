@@ -12,5 +12,5 @@ private:
 	void set_mouse_button_callbacK();
 	void on_mouse_press(GLFWwindow* window, int button, int action, int mods);
 
-	DarkEngine	*dark_engine;
+	DarkEngine	*dark_engine; // move to parent EventManager
 }
