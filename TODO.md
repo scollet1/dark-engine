@@ -4,11 +4,13 @@
 
 # Rendering
 ## Assets
+do not worry about file types/structure rn, but consider a nested JSON or YAML config
  - [ ] build asset schema
  - [ ] build asset file layout
 
 ## Contexts
 ### Scenes
+do not worry about file types/structure rn, but consider a nested JSON or YAML config
  - [ ] scene build graph of pointers to scene tree
    - [ ] root is always the current scene
 
