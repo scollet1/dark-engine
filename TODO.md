@@ -32,7 +32,14 @@ expect most memory to be managed by the underlying `*Manager` class. Obj gets in
 This needs extensive work and planning... if it's even necessary. The idea is that the application resting on the engine should not have to worry about managing things, but instead provide lifetime hints for when an object is spawned, rendered, its mechanics during the lifetime, and then when it should be derendered and/or destroyed.
 
  - [ ] create queue of destruction
+ 
+# TESTS
+ - [ ] add integration/unit tests
+   - [ ] figure out a testing framework
 
+## CI
+ - [ ] bad commits are automatically rejected if tests fail
+   - [ ] CI building and test automation after commits
 
 # Platform Support
 worry about versions later
