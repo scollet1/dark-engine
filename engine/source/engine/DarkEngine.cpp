@@ -68,7 +68,13 @@ bool    Engine::_Init(const char *title, const char *name) {
 }
 
 bool    Engine::_Run() {
-	return (game->_Run());
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+		// event_manager.poll_events(); // 
+		render_manager.draw_frame();
+	}
+	vkDeviceWaitIdle(device);
+	return (SUCCESS);
 }
 
 bool    Engine::_Destroy() {
