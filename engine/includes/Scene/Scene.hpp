@@ -16,6 +16,47 @@ public:
 	been loaded and they do not need to reload it
 	*/
 
+	/*
+	how do we explicitly define the asset dependencies?
+	*/
+	Scene() {
+		all_assets_loaded = false;
+		ready_to_transition = false;
+	}
+
+	void preload(
+		/*
+		assuming this scene is registered w/ SceneManager,
+
+		append load_assets() to a jobqueue with medium priority
+		// scene_manager.load_assets(&this);
+		from a developer perspective, if I want to preload
+		the edges of this scene before a transition
+		do {
+			get_scene("***string alias***").preload()
+		}
+		*/
+	);
+	void load_assets();
+	bool register_asset_to_scene(const std::string path);
+	void load_assets_callback(/*
+		callback for load_assets()
+		assets_loaded = true;
+		ready_to_transition = true;
+	*/);
+	void get_scene(/*
+		visibility abstracts to the SceneManager
+	*/);
+	bool can_transition(/*
+		return ready_to_transition && assets_loaded;
+	*/);
+
+	bool ready_to_transition; //
+	bool all_assets_loaded;
+
 private:
-	// Assets *assets
+	// SceneManager *scene_manager;
+	// HashMap assets;
+	// uint32 key; // for this, assigned on creation
+	// string key_alias // for human-readable
 }
