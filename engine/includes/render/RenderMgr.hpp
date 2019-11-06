@@ -296,8 +296,12 @@ VkImageView depthImageView;
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
     VkDebugUtilsMessengerEXT debugMessenger;
+
+    VkImageView textureImageView;
+	VkSampler textureSampler;
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
+
     VkSwapchainKHR 						swapChain;
     std::vector<VkImage> 				swapChainImages;
     VkFormat 							swapChainImageFormat;
@@ -307,9 +311,7 @@ VkImageView depthImageView;
     VkImage colorImage;
 VkDeviceMemory colorImageMemory;
 VkImageView colorImageView;
-    VkImageView textureImageView;
     uint32_t mipLevels;
-	VkSampler textureSampler;
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 	VkDeviceMemory vertexBufferMemory;

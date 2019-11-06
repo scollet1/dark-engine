@@ -67,14 +67,10 @@ bool						RenderMgr::createSwapChain() {
 
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
-	printf("fuck u 1\n");
-
 	uint32_t queueFamilyIndices[] = {
 		indices.graphicsFamily.first,
 		indices.presentFamily.first
 	};
-
-	printf("fuck u 2\n");
 
 	if (indices.graphicsFamily != indices.presentFamily) {
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -85,28 +81,22 @@ bool						RenderMgr::createSwapChain() {
 		createInfo.queueFamilyIndexCount = 0; // Optional
 		createInfo.pQueueFamilyIndices = nullptr; // Optional
 	}
-	printf("fuck u 3\n");
-
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
-	printf("fuck u 4\n");
 
 	if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
 	}
-	printf("fuck u 5\n");
 
 	vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
 	swapChainImages.resize(imageCount);
 	vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, swapChainImages.data());
 	swapChainImageFormat = surfaceFormat.format;
 	swapChainExtent = extent;
-
-	printf("fuck u 6\n");
 
 	return (SUCCESS);
 }
