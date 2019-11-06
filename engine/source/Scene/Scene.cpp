@@ -7,6 +7,16 @@ void Scene::load_assets() {
 	}
 }
 
+void Scene::transition_to() {
+
+}
+
+bool Scene::transitioned() {
+	for asset in assets {
+		
+	}
+}
+
 bool Scene::asset_loaded(Asset *asset) {
 	if asset.path in assets:
 		if assets.get(asset.path) == false:
