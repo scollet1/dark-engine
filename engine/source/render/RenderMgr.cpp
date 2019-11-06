@@ -1332,6 +1332,7 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
     	return (FAILURE);
 
     loadModel();
+    loadModel();
 	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);
