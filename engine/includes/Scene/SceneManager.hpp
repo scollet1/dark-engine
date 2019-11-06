@@ -12,10 +12,30 @@ class SceneManager {
 	preload these Scenes for smoother transitions and shorter
 	buffer time
 	*/
+
+	/*
+	neighbors is a list of neighbor nodes with optional
+	preloading
+	*/
+	void load_assets(Scene *obj
+		/*
+			job_queue.submit_work(
+				obj.load_assets,
+				obj.load_assets_callback
+			);
+		*/
+	);
 public:
 
 private:
 	/*
+	here I'm not so sure we'll always be able to
+	explicitily declare a scene graph. The reason
+	being: developers shouldn't necessarily be
+	coerced into manually structuring a scene graph
+	with deterministic edges for transitions. If we can
+	structure it this way, however, it makes our
+	work a lot easier, esp. for optimizations
 	Graph *scenes;
 	*/
 
