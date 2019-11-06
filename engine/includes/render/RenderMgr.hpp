@@ -274,30 +274,23 @@ VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTil
 
 	/* Platform specs */
 //	RECT						_desktop;
-	Display								*_display;
-	Screen								*_screen;
-	int									_width;
-	int									_height;
-
-	/* GLFW specs */
-	GLFWwindow* 						_window;
 
     VkInstance							_instance;
     VkDebugUtilsMessengerEXT 			callback;
     VkSurfaceKHR 						surface;
+    
+	VkDeviceMemory texture_image_memory;
+	VkSampler texture_sampler;
+    VkImageView texture_image_view;
 
-    VkPhysicalDevice 					physicalDevice = VK_NULL_HANDLE;
-    VkDevice 							_device;
     VkQueue 							graphicsQueue;
     VkImage depthImage;
-VkDeviceMemory depthImageMemory;
-VkImageView depthImageView;
+	VkDeviceMemory depthImageMemory;
+	VkImageView depthImageView;
     VkQueue 							presentQueue;
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
     VkDebugUtilsMessengerEXT debugMessenger;
-	VkImage textureImage;
-	VkDeviceMemory textureImageMemory;
     VkSwapchainKHR 						swapChain;
     std::vector<VkImage> 				swapChainImages;
     VkFormat 							swapChainImageFormat;
@@ -305,13 +298,9 @@ VkImageView depthImageView;
     std::vector<VkImageView> 			swapChainImageViews;
     std::vector<VkFramebuffer> 			swapChainFramebuffers;
     VkImage colorImage;
-VkDeviceMemory colorImageMemory;
-VkImageView colorImageView;
-    VkImageView textureImageView;
+	VkDeviceMemory colorImageMemory;
+	VkImageView colorImageView;
     uint32_t mipLevels;
-	VkSampler textureSampler;
-	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
 	VkDeviceMemory vertexBufferMemory;
 	std::vector<VkBuffer> uniformBuffers;
 	std::vector<VkDeviceMemory> uniformBuffersMemory;

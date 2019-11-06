@@ -28,4 +28,15 @@ private:
 	RenderMgr               *renderMgr;
 	Game                    *game;
 	Environ                 *Env;
+	
+	Display								*_display;
+	Screen								*_screen;
+	int									_width;
+	int									_height;
+
+	/* GLFW specs */
+	GLFWwindow* 						_window;
+	
+    VkPhysicalDevice 					physicalDevice = VK_NULL_HANDLE;
+    VkDevice 							_device;
 };

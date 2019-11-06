@@ -1010,55 +1010,49 @@ void RenderMgr::generateMipmaps(
     endSingleTimeCommands(commandBuffer);
 }
 
-bool RenderMgr::createTextureImage() {
-	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load(
-		TEXTURE_PATH.c_str(),
-		&texWidth, &texHeight,
-		&texChannels, STBI_rgb_alpha
-	);
-	VkDeviceSize imageSize = texWidth * texHeight * 4;
-	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+bool RenderMgr::createTextureImage(TextureAsset *texture) {
+	if (texture.loaded) {
+		VkDeviceSize imageSize = texture.get_image_size();
+		mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
-	if (!pixels) {
-		throw std::runtime_error("failed to load texture image!");
+		VkBuffer stagingBuffer;
+	    VkDeviceMemory stagingBufferMemory;
+
+		createBuffer(
+			imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			stagingBuffer, stagingBufferMemory
+		);
+
+		void* data;
+		vkMapMemory(_device, stagingBufferMemory, 0, imageSize, 0, &data);
+		memcpy(data, texture.get_pixels(), static_cast<size_t>(imageSize));
+		vkUnmapMemory(_device, stagingBufferMemory);
+
+		stbi_image_free(texture.get_pixels());
+
+		createImage(
+			texture.get_tex_width(), texture.get_tex_height(), mipLevels,
+			VK_SAMPLE_COUNT_1_BIT,
+			VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+			VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+			VK_IMAGE_USAGE_SAMPLED_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			texture.get_texture_image(), texture.get_texture_image_memory()
+		);
+
+	    transitionImageLayout(texture.get_texture_image(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+	    copyBufferToImage(stagingBuffer, texture.get_texture_image(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	    //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
+	    vkDestroyBuffer(_device, stagingBuffer, nullptr);
+	    vkFreeMemory(_device, stagingBufferMemory, nullptr);
+
+		return (SUCCESS);
 	}
 
-	VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-
-	createBuffer(
-		imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory
-	);
-
-	void* data;
-	vkMapMemory(_device, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(_device, stagingBufferMemory);
-
-	stbi_image_free(pixels);
-
-	createImage(
-		texWidth, texHeight, mipLevels,
-		VK_SAMPLE_COUNT_1_BIT,
-		VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-		VK_IMAGE_USAGE_TRANSFER_DST_BIT |
-		VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		textureImage, textureImageMemory
-	);
-
-    transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
-    copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-    //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
-    vkDestroyBuffer(_device, stagingBuffer, nullptr);
-    vkFreeMemory(_device, stagingBufferMemory, nullptr);
-
-	return (SUCCESS);
+	return (FAILURE);
 }
 
 bool RenderMgr::createDescriptorPool() {
@@ -1198,52 +1192,17 @@ bool RenderMgr::createTextureSampler() {
     return true;
 }
 
-bool RenderMgr::createTextureImageView() {
-	textureImageView = createImageView(
-		textureImage, VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_ASPECT_COLOR_BIT, 1
-	);
-    return true;
-}
+// bool RenderMgr::createTextureImageView(TextureAsset *texture) {
+// 	textureImageView = createImageView(
+// 		texture.get_texture_image(), VK_FORMAT_R8G8B8A8_UNORM,
+// 		VK_IMAGE_ASPECT_COLOR_BIT, 1
+// 	);
+//     return true;
+// }
 
-void RenderMgr::loadModel() {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string warn, err;
-
-    if (!tinyobj::LoadObj(
-    	&attrib, &shapes, &materials,
-    	&warn, &err, MODEL_PATH.c_str())
-	) {
-        throw std::runtime_error(warn + err);
-    }
-
-	std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
-	for (const auto& shape : shapes) {
-	    for (const auto& index : shape.mesh.indices) {
-	        Vertex vertex = {};
-	        
-            vertex.pos = {
-                attrib.vertices[3 * index.vertex_index + 0],
-                attrib.vertices[3 * index.vertex_index + 1],
-                attrib.vertices[3 * index.vertex_index + 2]
-            };
-
-            vertex.texCoord = {
-                attrib.texcoords[2 * index.texcoord_index + 0],
-                1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-            };
-
-            vertex.color = {1.0f, 1.0f, 1.0f};
-
-	        if (uniqueVertices.count(vertex) == 0) {
-	            uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-	            vertices.push_back(vertex);
-	        }
-
-	        indices.push_back(uniqueVertices[vertex]);
-	    }
+bool RenderMgr::destroy_object_assets() {
+	for object in objects {
+		object._Destroy();
 	}
 }
 
@@ -1251,10 +1210,7 @@ void RenderMgr::loadModel() {
 bool    RenderMgr::_Destroy() {
 	cleanupSwapChain();
        
-	vkDestroySampler(_device, textureSampler, nullptr);
-    vkDestroyImageView(_device, textureImageView, nullptr);
-    vkDestroyImage(_device, textureImage, nullptr);
-    vkFreeMemory(_device, textureImageMemory, nullptr);
+    scene.destroy_scene(); // destroy_object_assets
     vkDestroyDescriptorSetLayout(_device, descriptorSetLayout, nullptr);
 
 	vkDestroyBuffer(_device, indexBuffer, nullptr);
@@ -1331,7 +1287,7 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
     if (createTextureSampler() == FAILURE)
     	return (FAILURE);
 
-    loadModel();
+    // loadModel();
 	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);
