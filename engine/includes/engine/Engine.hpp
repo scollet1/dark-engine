@@ -17,6 +17,7 @@ public:
 
 	/*
 	 * Getters
+	 don't know aobut these being here :/
 	 */
 	Environ&    getEnv() {return (*Env);}
 	ThreadPool& getTpool() {return (*thrpool);}

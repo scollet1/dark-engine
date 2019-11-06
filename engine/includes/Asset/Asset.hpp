@@ -1,0 +1,6 @@
+class Asset {
+public:
+
+private:
+
+}
