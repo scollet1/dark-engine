@@ -3,13 +3,18 @@
    - [ ] need to figure out config options, check comments in /InputManager.cpp/hpp files
 
 # Rendering
-## Assets
+todo
+
+# Assets
 do not worry about file types/structure rn, but consider a nested JSON or YAML config
  - [ ] build asset schema
  - [ ] build asset file layout
+ 
+### Audio
+ - [ ] pick an audio library
 
-## Contexts
-### Scenes
+# Contexts
+## Scenes
 do not worry about file types/structure rn, but consider a nested JSON or YAML config
  - [ ] scene build graph of pointers to scene tree
    - [ ] root is always the current scene
@@ -32,7 +37,7 @@ expect most memory to be managed by the underlying `*Manager` class. Obj gets in
 This needs extensive work and planning... if it's even necessary. The idea is that the application resting on the engine should not have to worry about managing things, but instead provide lifetime hints for when an object is spawned, rendered, its mechanics during the lifetime, and then when it should be derendered and/or destroyed.
 
  - [ ] create queue of destruction
- 
+
 # TESTS
  - [ ] add integration/unit tests
    - [ ] figure out a testing framework
