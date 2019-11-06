@@ -1243,6 +1243,14 @@ bool    RenderMgr::_Destroy() {
 	return (SUCCESS);
 }
 
+bool create_texture_data(TextureAsset *texture) {
+	return (
+		createTextureImage(texture)
+		&& createTextureImageView()
+		&& createTextureSampler()
+	);
+}
+
 bool    RenderMgr::_Init(const char *title, const char *name) {
 	// TODO : make dynamic
 	if (getScreenRes() == FAILURE)
@@ -1280,12 +1288,6 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
  		return (FAILURE);
 	if (createFrameBuffers() == FAILURE)
 		return (FAILURE);	// frame buffers
-	if (createTextureImage() == FAILURE)
-		return (FAILURE);
-    if (createTextureImageView() == FAILURE)
-    	return (FAILURE);
-    if (createTextureSampler() == FAILURE)
-    	return (FAILURE);
 
     // loadModel();
 	
