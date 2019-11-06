@@ -721,8 +721,11 @@ void RenderMgr::updateUniformBuffer(uint32_t currentImage) {
 	vkUnmapMemory(_device, uniformBuffersMemory[currentImage]);
 }
 
-void	RenderMgr::drawFrame() {
-	vkWaitForFences(_device, 1, &inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
+void	RenderMgr::draw_frame() {
+	vkWaitForFences(
+		_device, 1, &inFlightFences[currentFrame],
+		VK_TRUE, std::numeric_limits<uint64_t>::max()
+	);
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
@@ -757,7 +760,10 @@ void	RenderMgr::drawFrame() {
 
 	vkResetFences(_device, 1, &inFlightFences[currentFrame]);
 
-	if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+	if (vkQueueSubmit(
+		graphicsQueue, 1, &submitInfo,
+		inFlightFences[currentFrame]) != VK_SUCCESS
+	) {
 	    throw std::runtime_error("failed to submit draw command buffer!");
 	}
 
@@ -1282,12 +1288,7 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
 }
 
 bool    RenderMgr::_Run() {
-	while (!glfwWindowShouldClose(dark_engine.get_window())) {
-		glfwPollEvents();
-		drawFrame();
-	}
-	vkDeviceWaitIdle(_device);
-	return (SUCCESS);
+	// moved to engine
 }
 
 bool	RenderMgr::_Test() {
