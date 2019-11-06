@@ -68,7 +68,12 @@ bool    Engine::_Init(const char *title, const char *name) {
 }
 
 bool    Engine::_Run() {
+	// float delta;
 	while (!glfwWindowShouldClose(window)) {
+		/*
+		get delta elapsed, if not > enough,
+		don't run physics this iter
+		*/
 		glfwPollEvents();
 		// event_manager.poll_events(); // 
 		render_manager.draw_frame();
