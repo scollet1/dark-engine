@@ -1010,11 +1010,10 @@ void RenderMgr::generateMipmaps(
     endSingleTimeCommands(commandBuffer);
 }
 
-bool RenderMgr::createTextureImage() {
+bool RenderMgr::createTextureImage(const char *path) {
 	int texWidth, texHeight, texChannels;
 	stbi_uc* pixels = stbi_load(
-		TEXTURE_PATH.c_str(),
-		&texWidth, &texHeight,
+		path, &texWidth, &texHeight,
 		&texChannels, STBI_rgb_alpha
 	);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -1039,6 +1038,7 @@ bool RenderMgr::createTextureImage() {
 	vkUnmapMemory(_device, stagingBufferMemory);
 
 	stbi_image_free(pixels);
+	VkImage textureImage;
 
 	createImage(
 		texWidth, texHeight, mipLevels,
@@ -1054,6 +1054,9 @@ bool RenderMgr::createTextureImage() {
 
     transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
     copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+
+    textureImages.push_back(textureImage);
+
     //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
@@ -1064,15 +1067,15 @@ bool RenderMgr::createTextureImage() {
 bool RenderMgr::createDescriptorPool() {
     std::array<VkDescriptorPoolSize, 2> poolSizes = {};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+	poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChainImages.size() + 2);
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+	poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChainImages.size() + 2);
 
 	VkDescriptorPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size());
+	poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size() + 2);
 
     if (vkCreateDescriptorPool(_device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor pool!");
@@ -1198,15 +1201,17 @@ bool RenderMgr::createTextureSampler() {
     return true;
 }
 
-bool RenderMgr::createTextureImageView() {
+bool RenderMgr::createTextureImageView(int index) {
+	VkImageView textureImageView;
 	textureImageView = createImageView(
-		textureImage, VK_FORMAT_R8G8B8A8_UNORM,
+		textureImages[index], VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_ASPECT_COLOR_BIT, 1
 	);
+	textureImageViews.push_back(textureImageView);
     return true;
 }
 
-void RenderMgr::loadModel() {
+void RenderMgr::loadModel(const char *path) {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -1214,7 +1219,7 @@ void RenderMgr::loadModel() {
 
     if (!tinyobj::LoadObj(
     	&attrib, &shapes, &materials,
-    	&warn, &err, MODEL_PATH.c_str())
+    	&warn, &err, path)
 	) {
         throw std::runtime_error(warn + err);
     }
@@ -1252,8 +1257,10 @@ bool    RenderMgr::_Destroy() {
 	cleanupSwapChain();
        
 	vkDestroySampler(_device, textureSampler, nullptr);
-    vkDestroyImageView(_device, textureImageView, nullptr);
-    vkDestroyImage(_device, textureImage, nullptr);
+	for (int i = 0; i < 2; i++) { // update
+    	vkDestroyImageView(_device, textureImageViews[i], nullptr);
+    	vkDestroyImage(_device, textureImages[i], nullptr);
+    }
     vkFreeMemory(_device, textureImageMemory, nullptr);
     vkDestroyDescriptorSetLayout(_device, descriptorSetLayout, nullptr);
 
@@ -1324,15 +1331,17 @@ bool    RenderMgr::_Init(const char *title, const char *name) {
  		return (FAILURE);
 	if (createFrameBuffers() == FAILURE)
 		return (FAILURE);	// frame buffers
-	if (createTextureImage() == FAILURE)
-		return (FAILURE);
-    if (createTextureImageView() == FAILURE)
-    	return (FAILURE);
+	createTextureImage("/home/samurai/dark-engine/engine/source/render/textures/leaf.png");
+	createTextureImage("/home/samurai/dark-engine/engine/source/render/textures/bark.png");
+	createTextureImage("/home/samurai/dark-engine/engine/source/render/textures/chalet.jpg");
+    createTextureImageView(0);
+    createTextureImageView(1);
+    createTextureImageView(2);
     if (createTextureSampler() == FAILURE)
     	return (FAILURE);
 
-    loadModel();
-    loadModel();
+    loadModel("/home/samurai/dark-engine/engine/source/render/models/chalet.obj");
+    loadModel("/home/samurai/dark-engine/engine/source/render/models/tree.obj");
 	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);

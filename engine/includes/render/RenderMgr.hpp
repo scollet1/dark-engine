@@ -241,12 +241,12 @@ VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTil
 	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	VkCommandBuffer beginSingleTimeCommands();
-	bool createTextureImageView();
+	bool createTextureImageView(int index); // change
 	bool createTextureSampler();
-	bool createTextureImage();
+	bool createTextureImage(const char *path);
 	void createColorResources();
 	VkFormat findDepthFormat();
-	void loadModel();
+	void loadModel(const char *path);
 	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 	bool hasStencilComponent(VkFormat format);
 	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
@@ -297,9 +297,9 @@ VkImageView depthImageView;
 	std::vector<VkDescriptorSet> descriptorSets;
     VkDebugUtilsMessengerEXT debugMessenger;
 
-    VkImageView textureImageView;
+    std::vector<VkImageView> textureImageViews;
 	VkSampler textureSampler;
-	VkImage textureImage;
+	std::vector<VkImage> textureImages;
 	VkDeviceMemory textureImageMemory;
 
     VkSwapchainKHR 						swapChain;
