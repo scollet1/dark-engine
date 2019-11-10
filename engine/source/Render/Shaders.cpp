@@ -1,6 +1,6 @@
-#include "../../includes/render/RenderMgr.hpp"
+#include "../../includes/Render/RenderManager.hpp"
 
-VkShaderModule		RenderMgr::createShaderModule(const std::vector<char>& code) {
+VkShaderModule		RenderManager::createShaderModule(const std::vector<char>& code) {
 	VkShaderModuleCreateInfo createInfo = {};
 	VkShaderModule shaderModule;
 

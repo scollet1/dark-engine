@@ -1,7 +1,8 @@
-#include "../includes/engine/Engine.hpp"
+#include "../includes/dark.h"
+#include "../includes/Engine/DarkEngine.hpp"
 
 int main(int argc, char **argv) {
-	Engine *engine;
+	DarkEngine dark_engine;
 	const char *title;
 	const char *name;
 
@@ -15,8 +16,8 @@ int main(int argc, char **argv) {
 
 	printf("%s\n%s\n", title, name);
 
-	engine = new Engine();
-	if (engine->_Init(title, name) == FAILURE)
+	dark_engine = new DarkEngine();
+	if (dark_engine._Init(title, name) == FAILURE)
 		return (EXIT_FAILURE);
 
 	/*
@@ -24,19 +25,18 @@ int main(int argc, char **argv) {
 	 */
 
 #ifdef UNIT_TEST_RENDERMGR
-	if (engine->getRenderer()._Test() == FAILURE)
+	if (dark_engine.getRenderer()._Test() == FAILURE)
 		return (EXIT_FAILURE);
-
 #endif
 
 	/*
-	 * if we're running the engine
+	 * if we're running the dark_engine
 	 */
 
 #ifdef RUN
-	if (engine->_Run() == FAILURE)
+	if (dark_engine._Run() == FAILURE)
 		return (EXIT_FAILURE);
-	if (engine->_Destroy() == FAILURE)
+	if (dark_engine._Destroy() == FAILURE)
 		return (EXIT_FAILURE);
 
 #else

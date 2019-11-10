@@ -1,16 +1,14 @@
-//#include "../../includes/topo.hpp"
-#include "../../includes/engine/Engine.hpp"
+#include "../../includes/Engine/DarkEngine.hpp"
 
-
-void	DarkEngine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+void DarkEngine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 	auto app = reinterpret_cast<DarkEngine*>(glfwGetWindowUserPointer(window));
 	(void)width;
 	(void)height;
-	app->setFrameBufferResized(true);
+	app->set_frame_buffer_resized(true);
 }
 
 
-bool	DarkEngine::initWindow(const char *title) {
+bool DarkEngine::init_window(const char *title) {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -26,10 +24,10 @@ bool	DarkEngine::initWindow(const char *title) {
 		title, nullptr/*glfwGetPrimaryMonitor()*/, nullptr);
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-	return (!!dark_engine.get_window());
+	return (!!_window);
 }
 
-bool	RenderMgr::getScreenRes() {
+bool DarkEngine::getScreenRes() {
 //	// Get a handle to the desktop window
 //	const HWND hDesktop;
 //
@@ -44,50 +42,51 @@ bool	RenderMgr::getScreenRes() {
 	return (true);
 }
 
-bool    Engine::_Init(const char *title, const char *name) {
+bool DarkEngine::_Init(const char *title, const char *name) {
 	Env = new Environ();
 	if (Env->_Init() == FAILURE) {
-		printf("Wow, something's really messed up.\n");
-		return (FAILURE);
+		std::cout << "Wow, something's really messed up" << std::endl;
+		return FAILURE;
 	}
-
-	thrpool = new ThreadPool();
-	if (thrpool->_Init(128) == FAILURE)
-		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(thrpool), "thread pool init failed"));
 
 	if (getScreenRes() == FAILURE)
 		return (FAILURE);
-	if (initWindow(name) == FAILURE)
+	if (init_window(name) == FAILURE)
 		return (FAILURE);
 
-	renderMgr = new RenderMgr();
-	if (renderMgr->_Init(title, name) == FAILURE)
+	render_manager = new RenderManager(this);	
+	if (render_manager->_Init(title, name) == FAILURE) {
 		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), "renderer init failed"));
+	}
 
 	return (SUCCESS);
 }
 
-bool    Engine::_Run() {
+bool DarkEngine::_Run() {
 	// float delta;
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(_window)) {
 		/*
 		get delta elapsed, if not > enough,
 		don't run physics this iter
 		*/
 		glfwPollEvents();
 		// event_manager.poll_events(); // 
-		render_manager.draw_frame();
+		render_manager->draw_frame();
 	}
-	vkDeviceWaitIdle(device);
+	render_manager->device_wait_idle();
 	return (SUCCESS);
 }
 
-bool    Engine::_Destroy() {
+bool DarkEngine::_Destroy() {
 	std::string errmsg = "destruction failed";
 
-	if (game->_Destroy() == FAILURE)
-		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(game), errmsg));
-	if (renderMgr->_Destroy() == FAILURE)
+	// if (game->_Destroy() == FAILURE)
+	// 	return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(game), errmsg));
+	if (render_manager->_Destroy() == FAILURE)
 		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), errmsg));
+
+	glfwDestroyWindow(_window);
+	glfwTerminate();
+
 	return (SUCCESS);
 }
