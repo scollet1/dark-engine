@@ -1,6 +1,6 @@
-#include "../../includes/render/RenderMgr.hpp"
+#include "../../includes/Render/RenderManager.hpp"
 
-VkSurfaceFormatKHR		RenderMgr::chooseSwapSurfaceFormat(
+VkSurfaceFormatKHR		RenderManager::chooseSwapSurfaceFormat(
 		const std::vector<VkSurfaceFormatKHR>& availableFormats
 ) {
 	if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
@@ -16,7 +16,7 @@ VkSurfaceFormatKHR		RenderMgr::chooseSwapSurfaceFormat(
 	return (availableFormats[0]);
 }
 
-SwapChainSupportDetails	RenderMgr::querySwapChainSupport(VkPhysicalDevice device) {
+SwapChainSupportDetails	RenderManager::querySwapChainSupport(VkPhysicalDevice device) {
 	SwapChainSupportDetails details;
 	uint32_t formatCount;
 	uint32_t presentModeCount;
@@ -40,7 +40,7 @@ SwapChainSupportDetails	RenderMgr::querySwapChainSupport(VkPhysicalDevice device
 	return (details);
 }
 
-bool						RenderMgr::createSwapChain() {
+bool						RenderManager::createSwapChain() {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 	uint32_t imageCount;
 
@@ -101,12 +101,12 @@ bool						RenderMgr::createSwapChain() {
 	return (SUCCESS);
 }
 
-VkExtent2D						RenderMgr::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+VkExtent2D						RenderManager::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 		return capabilities.currentExtent;
     } else {
         int width, height;
-        glfwGetFramebufferSize(dark_engine.get_window(), &width, &height);
+        glfwGetFramebufferSize(dark_engine->get_window(), &width, &height);
 
 		VkExtent2D actualExtent = {
 			static_cast<uint32_t>(width),
@@ -127,7 +127,7 @@ VkExtent2D						RenderMgr::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capa
 	}
 }
 
-VkPresentModeKHR				RenderMgr::chooseSwapPresentMode(
+VkPresentModeKHR				RenderManager::chooseSwapPresentMode(
 		const std::vector<VkPresentModeKHR> availablePresentModes
 ) {
 	VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
@@ -143,22 +143,7 @@ VkPresentModeKHR				RenderMgr::chooseSwapPresentMode(
 	return bestMode;
 }
 
-bool RenderMgr::createImageViews() {
-	// printf("%i\n", swapChainImages.size());
-	swapChainImageViews.resize(swapChainImages.size());
-	// printf("%i\n", swapChainImages.size());
-
-	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-		swapChainImageViews[i] = createImageView(
-			swapChainImages[i], swapChainImageFormat,
-			VK_IMAGE_ASPECT_COLOR_BIT, 1
-		);
-	}
-
-	return true;
-}
-
-bool	RenderMgr::cleanupSwapChain() {
+bool	RenderManager::cleanupSwapChain() {
     vkDestroyImageView(_device, colorImageView, nullptr);
     vkDestroyImage(_device, colorImage, nullptr);
     vkFreeMemory(_device, colorImageMemory, nullptr);
@@ -189,7 +174,7 @@ bool	RenderMgr::cleanupSwapChain() {
     return (SUCCESS);
 }
 
-bool RenderMgr::createDescriptorSets() {
+bool RenderManager::createDescriptorSets() {
 	std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -238,11 +223,11 @@ bool RenderMgr::createDescriptorSets() {
 
 // TODO : continue rendering while generating
 //			new swap chain
-bool	RenderMgr::recreateSwapChain() {
+bool	RenderManager::recreateSwapChain() {
 	int width = 0, height = 0;
     
-    while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(dark_engine.get_window(), &width, &height);
+    while (width == 0 && height == 0) { // note && ||
+        glfwGetFramebufferSize(dark_engine->get_window(), &width, &height);
         glfwWaitEvents();
     }
 

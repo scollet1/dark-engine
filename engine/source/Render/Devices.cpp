@@ -1,6 +1,6 @@
-#include "../../includes/render/RenderMgr.hpp"
+#include "../../includes/Render/RenderManager.hpp"
 
-bool						RenderMgr::createLogicalDevice() {
+bool						RenderManager::createLogicalDevice() {
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -52,7 +52,7 @@ bool						RenderMgr::createLogicalDevice() {
 	return (!!_device);
 }
 
-bool									RenderMgr::checkDeviceExtensionSupport(
+bool									RenderManager::checkDeviceExtensionSupport(
 		VkPhysicalDevice device) {
 	printf("checking device extension support\n");
 	uint32_t extensionCount;
@@ -76,7 +76,7 @@ bool									RenderMgr::checkDeviceExtensionSupport(
 	return (true);
 }
 
-bool	RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
+bool	RenderManager::isDeviceSuitable(VkPhysicalDevice device) {
 	printf("checking device suitability\n");
 
 	QueueFamilyIndices indices = findQueueFamilies(device);
@@ -111,7 +111,7 @@ bool	RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
 }
 
 // TODO
-//int										RenderMgr::rateDeviceSuitability(VkPhysicalDevice device) {
+//int										RenderManager::rateDeviceSuitability(VkPhysicalDevice device) {
 //	int score = 0;
 //
 //	// Discrete GPUs have a significant performance advantage
@@ -131,7 +131,7 @@ bool	RenderMgr::isDeviceSuitable(VkPhysicalDevice device) {
 //	return score;
 //}
 
-bool									RenderMgr::pickPhysicalDevice() {
+bool									RenderManager::pickPhysicalDevice() {
 //	std::multimap<int, VkPhysicalDevice> candidates;
 	uint32_t deviceCount = 0;
 

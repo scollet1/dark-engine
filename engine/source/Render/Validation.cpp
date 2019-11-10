@@ -1,6 +1,6 @@
-#include "../../includes/render/RenderMgr.hpp"
+#include "../../includes/Render/RenderManager.hpp"
 
-bool					RenderMgr::checkValidationLayerSupport() {
+bool					RenderManager::checkValidationLayerSupport() {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -25,7 +25,7 @@ bool					RenderMgr::checkValidationLayerSupport() {
 	return true;
 }
 
-std::vector<const char*>	RenderMgr::getRequiredExtensions() {
+std::vector<const char*>	RenderManager::getRequiredExtensions() {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);

@@ -1,23 +1,40 @@
-#ifndef RENDERMGR_H
-#define RENDERMGR_H
+#ifndef RENDERMGR_HPP
+#define RENDERMGR_HPP
 
-#include "../topo.hpp"
+#include "../dark.h"
+#include "../Engine/DarkEngine.hpp"
+#include "../vertex/vertex.h"
+#include "../texture/texture.h"
+#include "../Assets/Object.hpp"
 #include <optional>
 #include <boost/optional.hpp>
-/*
- * TODO : conditional platform checks bro
- */
-//#include "wtypes.h"
-#include <X11/Xlib.h>
-#include <chrono>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
+/*
+ * TODO : conditional platform checks
+ */
+
+#ifndef TEST_VERT_FILE
+#define TEST_VERT_FILE "/home/samurai/dark-engine/engine/source/render/shaders/vert.spv"
+#endif
+
+#ifndef TEST_FRAG_FILE
+#define TEST_FRAG_FILE "/home/samurai/dark-engine/engine/source/render/shaders/frag.spv"
+#endif
+
+#ifndef GLFW_INCLUDE_VULKAN
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#endif
+
+//#include "wtypes.h"
+#include <chrono>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/hash.hpp>
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -46,25 +63,9 @@ struct	QueueFamilyIndices {
 	std::pair<uint32_t, bool> presentFamily;
 
 	bool isComplete() {
-		// printf("returning completed indices\n");
-		printf("graphics family is complete?      | %s%s%s\n",
-		graphicsFamily.second? TRUE_STR:FALSE_STR,	
-		graphicsFamily.second? "TRUE":"FALSE",
-		ANSI_COLOR_RESET);
-		printf("presentation family is complete?  | %s%s%s\n",
-		presentFamily.second? TRUE_STR:FALSE_STR,
-		presentFamily.second? "TRUE":"FALSE",
-		ANSI_COLOR_RESET);
-		// return (graphicsFamily.has_value() && presentFamily.has_value());
 		return (graphicsFamily.second && presentFamily.second);
 	}
 };
-
-/*
-TODO : move this into another file ok
-Vertex.h/cpp
-*/
-#include <glm/glm.hpp>
 
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
@@ -84,12 +85,13 @@ namespace std {
     };
 }
 
-class RenderMgr {
+class RenderManager {
 public:
-	RenderMgr() {};
-	~RenderMgr() {};
-	RenderMgr(const RenderMgr &rhs) {*this = rhs;};
-	RenderMgr& operator=(const RenderMgr &rhs) {
+	RenderManager() {};
+	RenderManager(DarkEngine *dark_engine) : dark_engine(dark_engine) {};
+	~RenderManager() {};
+	RenderManager(const RenderManager &rhs) {*this = rhs;}
+	RenderManager& operator=(const RenderManager &rhs) {
 		*this = rhs; return (*this);
 	}
 
@@ -110,16 +112,18 @@ public:
 	// drawFrame();
 
 	/* Getters */
-	bool									getScreenRes();
 	// TODO : preprocessor statements for debugging
 
 	/* Setters */
+
+
+	void draw_frame();
+	void device_wait_idle();
 
 private:
 	// TODO : move to utils.cpp
 	static std::vector<char>				readFile(const std::string& filename);
 
-	void									drawFrame();
 
 	bool									createInstance(const char *title, const char *name);
 	bool									createGraphicsPipeline();
@@ -146,6 +150,7 @@ private:
 	bool createDescriptorSetLayout();
 	bool createDescriptorSets();
 	VkSampleCountFlagBits getMaxUsableSampleCount();
+	void create_texture_image_views();
 	bool 									createIndexBuffer();
 	bool									pickPhysicalDevice();
 	int										rateDeviceSuitability(VkPhysicalDevice device);
@@ -164,16 +169,27 @@ private:
 	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	VkCommandBuffer beginSingleTimeCommands();
-	bool createTextureImageView();
+
 	bool createTextureSampler();
-	bool createTextureImage();
-	void createColorResources();
-	VkFormat findDepthFormat();
-	void loadModel();
+
+	void create_image_views();
+	VkImage create_texture_image(Texture texture);
+	VkImageView create_texture_image_view(VkImage texture_image);
+	VkImageView create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	void create_image(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+
+	void destroy_texture_images();
+
+	void compile_vertices(std::vector<Vertex> obj_vertices);
+	void compile_indices(std::vector<uint32_t> obj_indices);
+	void compile_objects(std::vector<Object> objects);
+
 	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 	bool hasStencilComponent(VkFormat format);
-	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
-	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+
+	void createColorResources();
+	VkFormat findDepthFormat();
+
 	bool copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	uint32_t 								findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -197,7 +213,7 @@ private:
 
 	/* Platform specs */
 //	RECT						_desktop;
-	DarkEngine 							*dark_engine;
+	DarkEngine *dark_engine;
 
     VkInstance							_instance;
     VkDebugUtilsMessengerEXT 			callback;
@@ -213,7 +229,7 @@ private:
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
     VkDebugUtilsMessengerEXT debugMessenger;
-	VkImage textureImage;
+	std::vector<VkImage> texture_images;
 	VkDeviceMemory textureImageMemory;
     VkSwapchainKHR 						swapChain;
     std::vector<VkImage> 				swapChainImages;
@@ -225,8 +241,12 @@ private:
 	VkDeviceMemory colorImageMemory;
 	VkImageView colorImageView;
     VkImageView textureImageView;
+    std::vector<VkImageView> texture_image_views;
     uint32_t mipLevels;
 	VkSampler textureSampler;
+
+	std::vector<Vertex> vertices; // combine vertices
+    std::vector<uint32_t> indices; // combine indices
 
 	VkDeviceMemory vertexBufferMemory;
 	std::vector<VkBuffer> uniformBuffers;
@@ -259,9 +279,10 @@ private:
 	// NOTE : I no longer know what this means
 	// TODO : topo image object wrapper for Vk ???
 
-	const std::vector<const char*>		validationLayers = {
+	const std::vector<const char*> validationLayers = {
 			"VK_LAYER_LUNARG_standard_validation"
 	};
+
 	const std::vector<const char*> deviceExtensions = {
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
