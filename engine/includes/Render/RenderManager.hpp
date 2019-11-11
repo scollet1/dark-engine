@@ -12,11 +12,11 @@
  */
 
 #ifndef TEST_VERT_FILE
-#define TEST_VERT_FILE "/home/samurai/dark-engine/engine/source/render/shaders/vert.spv"
+#define TEST_VERT_FILE "/home/samurai/dark-engine/engine/source/Render/shaders/vert.spv"
 #endif
 
 #ifndef TEST_FRAG_FILE
-#define TEST_FRAG_FILE "/home/samurai/dark-engine/engine/source/render/shaders/frag.spv"
+#define TEST_FRAG_FILE "/home/samurai/dark-engine/engine/source/Render/shaders/frag.spv"
 #endif
 
 #ifndef GLFW_INCLUDE_VULKAN
@@ -131,7 +131,6 @@ private:
 	bool									createCommandPool();
 	bool									createCommandBuffers();
 	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-
 	bool									createSurface();
 	bool									createSwapChain();
 	bool 									cleanupSwapChain();
@@ -149,6 +148,7 @@ private:
 	bool createDescriptorSets();
 	VkSampleCountFlagBits getMaxUsableSampleCount();
 	void create_texture_image_views();
+	void create_texture_images();
 	bool 									createIndexBuffer();
 	bool									pickPhysicalDevice();
 	int										rateDeviceSuitability(VkPhysicalDevice device);
