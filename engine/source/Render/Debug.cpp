@@ -1,6 +1,6 @@
-#include "../../includes/render/RenderMgr.hpp"
+#include "../../includes/Render/RenderManager.hpp"
 
-VkResult RenderMgr::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback) {
+VkResult RenderManager::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback) {
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 
 	if (func != nullptr) {
@@ -10,7 +10,7 @@ VkResult RenderMgr::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDe
 	}
 }
 
-void									RenderMgr::DestroyDebugUtilsMessengerEXT(
+void									RenderManager::DestroyDebugUtilsMessengerEXT(
 	VkInstance instance,
 	VkDebugUtilsMessengerEXT callback,	
 	const VkAllocationCallbacks* pAllocator) {
@@ -23,7 +23,7 @@ void									RenderMgr::DestroyDebugUtilsMessengerEXT(
 	}
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL RenderMgr::debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL RenderManager::debugCallback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -35,7 +35,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL RenderMgr::debugCallback(
 	return VK_FALSE;
 }
 
-bool									RenderMgr::setupDebugCallback() {
+bool									RenderManager::setupDebugCallback() {
 	if (!enableValidationLayers) return (FAILURE);
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = {};

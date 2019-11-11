@@ -7,8 +7,7 @@
 ** to any data type, described
 ** by size
 */
-typedef struct		s_node
-{
+typedef struct		s_node {
 	size_t			size;
 	void			*data;
 	struct s_node	*next;
@@ -25,15 +24,13 @@ typedef struct		s_node
 ** convenient exit condition
 ** during list traversal
 */
-typedef struct		s_list
-{
+typedef struct		s_list {
 	size_t 			len;
 	t_node			*head;
 	t_node			*tail;
 }					t_list;
 
-typedef struct		s_tree
-{
+typedef struct		s_tree {
 	size_t 			len;
 	t_list			*children;
 } t_tree;

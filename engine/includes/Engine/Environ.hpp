@@ -1,6 +1,8 @@
 #ifndef ENVIRON_HPP
 #define ENVIRON_HPP
 
+#include "../dark.hpp"
+
 typedef struct              s_trace {
 	int                     errcode;
 	std::string             errmsg;
@@ -19,8 +21,13 @@ typedef struct              s_status {
 }                           t_status;
 
 class Environ {
+	/*
+	refactor
+	should extend error handling utils
+	from generic c++ exceptions
+	no need for this custom error stack
+	*/
 public:
-
 	Environ();
 	~Environ();
 	Environ(const Environ &rhs) {*this = rhs;}
