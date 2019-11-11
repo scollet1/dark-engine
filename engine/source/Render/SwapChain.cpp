@@ -238,7 +238,7 @@ bool	RenderManager::recreateSwapChain() {
     createSwapChain();
     printf("done create swap re\n");
 
-    createImageViews();
+    create_image_views();
     createRenderPass();
     createGraphicsPipeline();
     createColorResources();

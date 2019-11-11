@@ -1,7 +1,8 @@
 #ifndef DARKENGINE_H
 #define DARKENGINE_H
 
-#include "../dark.h"
+#include "../dark.hpp"
+#include "./Environ.hpp"
 #include "../Render/RenderManager.hpp"
 
 #ifndef GLFW_INCLUDE_VULKAN
@@ -19,6 +20,8 @@
 #ifndef SCRNHOFFS
 #define SCRNHOFFS -100
 #endif
+
+class RenderManager;
 
 class DarkEngine {
 public:

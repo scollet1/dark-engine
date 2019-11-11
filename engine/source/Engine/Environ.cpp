@@ -1,10 +1,10 @@
-#include "../../includes/dark.h"
+#include "../../includes/Engine/Environ.hpp"
 
 Environ::Environ() {}
 Environ::~Environ() {}
 
 bool        Environ::_Init() {
-	if (!(status = (t_status*)memalloc(sizeof(t_status))))
+	if (!(status = (t_status*)malloc(sizeof(t_status))))
 		return (FAILURE);
 	return (SUCCESS);
 }
@@ -27,7 +27,7 @@ void        Environ::_Err_Else(int errcode,
 	std::string full_trace;
 	t_trace     *trace;
 
-	trace = (t_trace*)memalloc(sizeof(t_error));
+	trace = (t_trace*)malloc(sizeof(t_error));
 	full_trace = std::string(NON_FATAL_ERR) + \
 				" in file " + file + \
 				" in " + func +	\
@@ -48,7 +48,7 @@ void        Environ::_Err_Proc(int errcode,
 	std::string full_trace;
 	t_trace     *trace;
 
-	trace = (t_trace*)memalloc(sizeof(t_error));
+	trace = (t_trace*)malloc(sizeof(t_error));
 	full_trace = NON_FATAL_ERR + \
 				" in file " + file + \
 				" in " + func +	\
@@ -70,7 +70,7 @@ void        Environ::_Err_Sys(int errcode,
 	std::string full_trace;
 	t_trace     *trace;
 
-	trace = (t_trace*)memalloc(sizeof(t_error));
+	trace = (t_trace*)malloc(sizeof(t_error));
 	full_trace = FATAL_ERR + \
 				" in file " + file + \
 				" in " + func +	\

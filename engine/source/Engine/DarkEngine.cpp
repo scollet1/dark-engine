@@ -54,7 +54,7 @@ bool DarkEngine::_Init(const char *title, const char *name) {
 	if (init_window(name) == FAILURE)
 		return (FAILURE);
 
-	render_manager = new RenderManager(this);	
+	render_manager = new RenderManager(this);
 	if (render_manager->_Init(title, name) == FAILURE) {
 		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), "renderer init failed"));
 	}

@@ -1,5 +1,5 @@
-#ifndef DARK_H
-#define DARK_H
+#ifndef DARK_HPP
+#define DARK_HPP
 
 #include <algorithm>
 #include <cstdlib>
@@ -24,8 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "./defined.hpp"
-#include "./Engine/Environ.hpp"
-#include "./utils/utils.hpp"
+#include <optional>
+#include <boost/optional.hpp>
 
-#endif // DARK_H
+#include <stb_image.h>
+
+#include "./defined.h"
+
+#endif // DARK_HPP
