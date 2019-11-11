@@ -1,13 +1,11 @@
 #ifndef RENDERMGR_HPP
 #define RENDERMGR_HPP
 
-#include "../dark.h"
-#include "../Engine/DarkEngine.hpp"
+#include "../dark.hpp"
 #include "../vertex/vertex.h"
-#include "../texture/texture.h"
+#include "../texture/texture.hpp"
 #include "../Assets/Object.hpp"
-#include <optional>
-#include <boost/optional.hpp>
+#include "../Engine/DarkEngine.hpp"
 
 /*
  * TODO : conditional platform checks
@@ -85,6 +83,8 @@ namespace std {
     };
 }
 
+class DarkEngine;
+
 class RenderManager {
 public:
 	RenderManager() {};
@@ -116,7 +116,6 @@ public:
 
 	/* Setters */
 
-
 	void draw_frame();
 	void device_wait_idle();
 
@@ -141,7 +140,6 @@ private:
 	SwapChainSupportDetails					querySwapChainSupport(VkPhysicalDevice device);
 	VkPresentModeKHR						chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
 	VkExtent2D								chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-	bool									createImageViews();
 	void									createSemaphores();
 	bool createUniformBuffers();
 	bool createDescriptorPool();

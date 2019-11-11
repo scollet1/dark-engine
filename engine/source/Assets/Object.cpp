@@ -1,5 +1,8 @@
 #include "../includes/Assets/Object.hpp"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 void Object::load_model(const char *path) {
 	/*
 	parallelize whatever parent is calling this

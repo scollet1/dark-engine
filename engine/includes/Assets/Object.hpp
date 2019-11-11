@@ -1,10 +1,8 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#include "../texture/texture.h"
-
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
+#include "../dark.hpp"
+#include "../texture/texture.hpp"
 
 // store in file
 const std::string MODEL_PATH = "/home/samurai/dark-engine/engine/source/render/models/chalet.obj";

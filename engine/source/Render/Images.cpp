@@ -1,5 +1,12 @@
 #include "../../includes/Render/RenderManager.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+/*
+must be defined in a *.c file to create the implementation
+https://github.com/nothings/stb/blob/master/stb_image.h#L5
+*/
+
 void RenderManager::create_image(
 	uint32_t width, uint32_t height, uint32_t mipLevels,
 	VkSampleCountFlagBits numSamples, VkFormat format,

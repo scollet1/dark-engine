@@ -1,5 +1,5 @@
-#ifndef DEFINED_HPP
-#define DEFINED_HPP
+#ifndef DEFINED_H
+#define DEFINED_H
 
 # if __STDC_VERSION__ < 199901L
 	# if __GNUC__ >= 2
@@ -81,4 +81,4 @@
 #define FALSE_STR (ANSI_COLOR_RED)
 #endif
 
-#endif
+#endif // DEFINED_H
