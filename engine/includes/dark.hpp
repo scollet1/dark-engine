@@ -1,5 +1,5 @@
-#ifndef TOPO_HPP
-#define TOPO_HPP
+#ifndef DARK_HPP
+#define DARK_HPP
 
 #include <algorithm>
 #include <cstdlib>
@@ -24,8 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "./defined.hpp"
-#include "./engine/Environ.hpp"
-#include "./utils/utils.hpp"
+#include <optional>
+#include <boost/optional.hpp>
 
-#endif
+#include <stb_image.h>
+
+#include "./defined.h"
+
+#endif // DARK_HPP
