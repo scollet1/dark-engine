@@ -1,3 +1,6 @@
+#ifndef SCENE_HPP
+#define SCENE_HPP
+
 class Scene {
 public:
 	/*
@@ -50,13 +53,43 @@ public:
 	bool can_transition(/*
 		return ready_to_transition && assets_loaded;
 	*/);
+	std::vector<Objects> get_all_objects() {return objects;}
 
 	bool ready_to_transition; //
 	bool all_assets_loaded;
 
 private:
+	/*
+	to hash the objects:
+		create a map of maps for each Asset
+		instance type(Object, Audio, etc...)
+
+		hash each UID of each asset into their
+		respective map with an index into their
+		respective Asset vectors
+
+		create a vector for each Asset and record
+		the index
+
+	when you want a specific Asset by UID:
+		index into the map of Asset types
+
+		index into the map holding the UIDs
+		of that type
+
+		index into the vector using the
+		result of the UID map
+
+		AssetList[AssetMap["Asset"][UID]]
+
+		probably doesn't need to be so
+		complicated
+	*/
 	// SceneManager *scene_manager;
 	// HashMap assets;
 	// uint32 key; // for this, assigned on creation
 	// string key_alias // for human-readable
+	std::vector<Object> objects;
 }
+
+#endif // SCENE_HPP
