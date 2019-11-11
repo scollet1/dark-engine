@@ -26,6 +26,7 @@
 
 #include <optional>
 #include <boost/optional.hpp>
+#include <boost/graph/adjacency_list.hpp>
 
 #include <stb_image.h>
 

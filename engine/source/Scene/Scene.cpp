@@ -7,10 +7,6 @@ void Scene::load_assets() {
 	}
 }
 
-void Scene::transition_to() {
-
-}
-
 bool Scene::transitioned() {
 	for asset in assets {
 		
