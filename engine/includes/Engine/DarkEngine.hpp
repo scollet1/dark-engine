@@ -52,6 +52,7 @@ public:
 	/*
 	 * Getters
 	 */
+	std::vector<Object> get_current_scene_objects();
 	Environ&    getEnv() {return (*Env);}
 	// ThreadPool& getTpool() {return (*thrpool);}
 	RenderManager &get_render_manager() {return *render_manager;}

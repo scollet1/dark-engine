@@ -7,6 +7,18 @@ void DarkEngine::framebufferResizeCallback(GLFWwindow* window, int width, int he
 	app->set_frame_buffer_resized(true);
 }
 
+std::vector<Object> DarkEngine::get_current_scene_objects() {
+	/*
+	chance for frustum culling
+	if (options.optimizations.frustum_culling_enabled) {
+		return scene_manager.get_current_scene().get_objects_in_view();
+	} else {
+		...
+	}
+	*/
+	return scene_manager.get_current_scene().get_all_objects();
+}
+
 
 bool DarkEngine::init_window(const char *title) {
 	glfwInit();

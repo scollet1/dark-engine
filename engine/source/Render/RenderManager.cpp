@@ -1165,8 +1165,7 @@ bool    RenderManager::_Init(const char *title, const char *name) {
 	if (createFrameBuffers() == FAILURE)
 		return (FAILURE);	// frame buffers
 
-	// objects each do create textureImage
-	// create_texture_images();
+	create_texture_images();
 
     create_texture_image_views();
     if (createTextureSampler() == FAILURE)
