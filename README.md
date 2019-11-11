@@ -10,8 +10,8 @@
 ## To run render manager test
  - `./make_unit_test_render_mgr`
  - `./DarkEngine`
-
-Master should remain unbroken on all new PRs. Needs regression testing
+ 
+Active development happens on [`dev`](https://github.com/scollet1/dark-engine/tree/dev)
 
 # Boost
 ## concurrency and data structures
