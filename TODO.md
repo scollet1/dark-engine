@@ -46,6 +46,13 @@ This needs extensive work and planning... if it's even necessary. The idea is th
  - [ ] bad commits are automatically rejected if tests fail
    - [ ] CI building and test automation after commits
 
+# Packaging
+## Installation
+
+## Configuration
+ - [ ] remove boost from deps
+   - [ ] wget or add boost to github submodules
+
 # Platform Support
 worry about versions later
 
