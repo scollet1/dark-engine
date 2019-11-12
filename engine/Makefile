@@ -27,6 +27,8 @@ LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 # SRC_FILES = testing/testengine.cpp
 SRC_FILES = Engine/DarkEngine.cpp \
 			Engine/Environ.cpp \
+			Scene/Scene.cpp \
+			Scene/SceneManager.cpp \
 			Render/RenderManager.cpp \
 			Render/Debug.cpp \
 			Render/Devices.cpp \

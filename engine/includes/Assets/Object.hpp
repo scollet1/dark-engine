@@ -2,6 +2,7 @@
 #define OBJECT_HPP
 
 #include "../dark.hpp"
+#include "../vertex/vertex.h"
 #include "../texture/texture.hpp"
 
 // store in file

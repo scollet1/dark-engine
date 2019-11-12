@@ -3,12 +3,8 @@
 
 #include "../dark.hpp"
 #include "./Environ.hpp"
+#include "../Scene/SceneManager.hpp"
 #include "../Render/RenderManager.hpp"
-
-#ifndef GLFW_INCLUDE_VULKAN
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#endif
 
 #include <GLFW/glfw3.h>
 #include <X11/Xlib.h>
@@ -64,7 +60,8 @@ private:
 	bool getScreenRes();
 
 	// ThreadPool              *thrpool;
-	RenderManager               *render_manager;
+	RenderManager *render_manager;
+	SceneManager *scene_manager;
 	// Game                    *game;
 	Environ                 *Env;
 
