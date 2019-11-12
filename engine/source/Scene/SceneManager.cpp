@@ -1,11 +1,40 @@
 #include "../../includes/Scene/SceneManager.hpp"
 
-void SceneManager::transition_to(int new_scene_id) {
-	//
-	Scene new_scene;
-	new_scene = scenes.get_node(new_scene_id);
-	current_scene = new_scene;
-	new_scene.transitioned();
+void SceneManager::load_assets_to_job_queue(Scene *scene, bool deferred) {
+	/*
+	@defererred:
+		false: loose scheduling, job can be completed "in the future"
+		true: tight scheduling, job should be completed "now"
+	*/
+	// float priority;
+
+	// if (deferred) {
+	// 	priority = 0.0;
+	// } else {
+	// 	priority = 1.0;
+	// }
+
+	// dark_engine.get_job_queue().insert_with_priority(
+	// 	scene.load_assets,
+	// 	scene.load_assets_callback,
+	// 	priority
+	// );
+}
+
+void SceneManager::preload_assets(Scene *scene) {
+	load_assets_to_job_queue(scene, true);
+}
+
+void SceneManager::load_assets(Scene *scene) {
+	load_assets_to_job_queue(scene, false);
+}
+
+void SceneManager::transition_to(SceneDescriptor new_scene) {
+	// //
+	// Scene new_scene;
+	// new_scene = scenes.get_node(new_scene_id);
+	// current_scene = new_scene;
+	// new_scene.transitioned();
 	// begin domino effect
 }
 
@@ -15,17 +44,17 @@ void SceneManager::load_scene(SceneDescriptor s) {
 	scene = scenes[s];
 	
 	load_assets(scene);
-	if (dark_engine.get_options().optimzations.preload_scenes) {
-		auto neighbors = boost::adjacent_vertices(s, scenes);
+	// if (dark_engine.get_options().optimzations.preload_scenes) {
+	// 	auto neighbors = boost::adjacent_vertices(s, scenes);
 
-		for (auto n : make_iterator_range(neighbors)) {
-			/*
-			perform is_loaded?
-			check on asset load
-			*/
-			preload_assets(n);
-		}
-	}
+	// 	for (auto n : make_iterator_range(neighbors)) {
+	// 		/*
+	// 		perform is_loaded?
+	// 		check on asset load
+	// 		*/
+	// 		preload_assets(n);
+	// 	}
+	// }
 }
 
 void SceneManager::load_scene_graph(const std::string path) {
@@ -57,4 +86,13 @@ void SceneManager::load_scene_graph(const std::string path) {
 	current_scene = resolve_list[0];
 	load_scene(current_scene);
 	*/
+}
+
+void SceneManager::create_test_scene() {
+	test_scene = new Scene();
+	Object *test_object = new Object(
+		"Testing path does not matter \
+		just need to trip the constructor"
+	);
+	test_scene->add_test_object_to_scene(test_object);
 }

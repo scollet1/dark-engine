@@ -83,10 +83,10 @@ void RenderManager::create_image_views() {
 	}
 }
 
-VkImage RenderManager::create_texture_image(Texture texture) {
-	VkDeviceSize imageSize = texture.width * texture.height * 4;
+VkImage RenderManager::create_texture_image(Texture *texture) {
+	VkDeviceSize imageSize = texture->width * texture->height * 4;
 	VkImage texture_image;
-	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1;
+	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texture->width, texture->height)))) + 1;
 
 	VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -100,13 +100,13 @@ VkImage RenderManager::create_texture_image(Texture texture) {
 
 	void* data;
 	vkMapMemory(_device, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, texture.pixels, static_cast<size_t>(imageSize));
+	memcpy(data, texture->pixels, static_cast<size_t>(imageSize));
 	vkUnmapMemory(_device, stagingBufferMemory);
 
-	stbi_image_free(texture.pixels);
+	stbi_image_free(texture->pixels);
 
 	create_image(
-		texture.width, texture.height, mipLevels,
+		texture->width, texture->height, mipLevels,
 		VK_SAMPLE_COUNT_1_BIT,
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -142,14 +142,14 @@ void RenderManager::create_texture_images() {
 	std::vector<Object>::iterator i;
 	std::vector<Object> current_scene_objects;
 
-	current_scene_objects = dark_engine.get_current_scene_objects();
-	if (current_scene_objects) {
+	current_scene_objects = dark_engine->get_current_scene_objects();
+	if (current_scene_objects.size()) {
 		for (i = current_scene_objects.begin(); i != current_scene_objects.end(); i++) {
 			current_texture_image = create_texture_image((*i).get_texture());
 			if (current_texture_image) {
 				texture_images.push_back(current_texture_image);
 			} else {
-				throw std::runtime_error("failed to create texture image" + (*i).get_texture().path);
+				throw std::runtime_error("failed to create texture image" + (*i)->get_texture().path);
 			}
 		}
 	}

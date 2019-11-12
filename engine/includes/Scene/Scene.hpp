@@ -1,6 +1,10 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include "../dark.hpp"
+#include "../Assets/Asset.hpp"
+#include "../Assets/Object.hpp"
+
 class Scene {
 public:
 	/*
@@ -40,8 +44,11 @@ public:
 		}
 		*/
 	);
+	void load();
 	void load_assets();
 	bool register_asset_to_scene(const std::string path);
+	bool mark_all_assets_loaded();
+	bool mark_asset_loaded();
 	void load_assets_callback(/*
 		callback for load_assets()
 		assets_loaded = true;
@@ -53,10 +60,14 @@ public:
 	bool can_transition(/*
 		return ready_to_transition && assets_loaded;
 	*/);
-	std::vector<Objects> get_all_objects() {return objects;}
+	bool transitioned();
+	bool asset_loaded(Asset *asset);
+	std::vector<Object> get_all_objects() {return objects;}
 
 	bool ready_to_transition; //
 	bool all_assets_loaded;
+
+	void add_test_object_to_scene(Object *object);
 
 private:
 	/*
@@ -90,6 +101,6 @@ private:
 	// uint32 key; // for this, assigned on creation
 	// string key_alias // for human-readable
 	std::vector<Object> objects;
-}
+};
 
 #endif // SCENE_HPP

@@ -16,7 +16,7 @@ std::vector<Object> DarkEngine::get_current_scene_objects() {
 		...
 	}
 	*/
-	return scene_manager.get_current_scene().get_all_objects();
+	return scene_manager->get_current_test_scene()->get_all_objects();
 }
 
 
@@ -60,6 +60,9 @@ bool DarkEngine::_Init(const char *title, const char *name) {
 		std::cout << "Wow, something's really messed up" << std::endl;
 		return FAILURE;
 	}
+
+	scene_manager = new SceneManager();
+	scene_manager->create_test_scene();
 
 	if (getScreenRes() == FAILURE)
 		return (FAILURE);
