@@ -2,7 +2,7 @@
 #define RENDERMGR_HPP
 
 #include "../dark.hpp"
-#include "../vertex/vertex.h"
+#include "../vertex/vertex.hpp"
 #include "../texture/texture.hpp"
 #include "../Assets/Object.hpp"
 #include "../Engine/DarkEngine.hpp"
@@ -58,18 +58,6 @@ struct UniformBufferObject {
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
 };
-
-namespace std {
-    template<> struct hash<Vertex> {
-        size_t operator()(Vertex const& vertex) const {
-            return (
-            	((hash<glm::vec3>()(vertex.pos) ^
-            	(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
-            	(hash<glm::vec2>()(vertex.texCoord) << 1)
-        	);
-        }
-    };
-}
 
 class DarkEngine;
 

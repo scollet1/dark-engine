@@ -126,8 +126,8 @@ VkImage RenderManager::create_texture_image(Texture *texture) {
     );
     copyBufferToImage(
     	stagingBuffer, texture_image,
-    	static_cast<uint32_t>(texture.width),
-    	static_cast<uint32_t>(texture.height)
+    	static_cast<uint32_t>(texture->width),
+    	static_cast<uint32_t>(texture->height)
     );
 
     //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
@@ -149,7 +149,7 @@ void RenderManager::create_texture_images() {
 			if (current_texture_image) {
 				texture_images.push_back(current_texture_image);
 			} else {
-				throw std::runtime_error("failed to create texture image" + (*i)->get_texture().path);
+				throw std::runtime_error("failed to create texture image");// (*i).get_texture()->path);
 			}
 		}
 	}

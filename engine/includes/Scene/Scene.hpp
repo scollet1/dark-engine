@@ -67,7 +67,7 @@ public:
 	bool ready_to_transition; //
 	bool all_assets_loaded;
 
-	void add_test_object_to_scene(Object *object);
+	void add_test_object_to_scene(Object object);
 
 private:
 	/*

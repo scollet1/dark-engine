@@ -212,7 +212,7 @@ void RenderManager::compile_indices(std::vector<uint32_t> obj_indices) {
 }
 
 void RenderManager::compile_objects(std::vector<Object> objects) {
-	Texture obj_texture;
+	Texture *obj_texture;
 	std::vector<Object>::iterator i;
 	std::vector<Vertex> obj_vertices;
 	std::vector<uint32_t> obj_indices;
@@ -222,7 +222,7 @@ void RenderManager::compile_objects(std::vector<Object> objects) {
 		compile_vertices(obj_vertices);
 		obj_indices = (*i).get_indices();
 		compile_indices(obj_indices);
-		obj_texture = *(*i).get_texture();
+		obj_texture = (*i).get_texture();
 		texture_images.push_back(create_texture_image(obj_texture));
 	}
 }

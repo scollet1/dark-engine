@@ -39,11 +39,10 @@ void SceneManager::transition_to(SceneDescriptor new_scene) {
 }
 
 void SceneManager::load_scene(SceneDescriptor s) {
-	Scene scene;
-
-	scene = scenes[s];
+	// Scene scene;
+	// scene = scenes[s];
 	
-	load_assets(scene);
+	// load_assets(scene);
 	// if (dark_engine.get_options().optimzations.preload_scenes) {
 	// 	auto neighbors = boost::adjacent_vertices(s, scenes);
 
@@ -60,7 +59,7 @@ void SceneManager::load_scene(SceneDescriptor s) {
 void SceneManager::load_scene_graph(const std::string path) {
 	/*
 	SceneDescriptor s_desc;
-	std::vector<Scene> resolve_list;
+	std::vector<SceneDescriptor> resolve_list;
 
 	with open path + scenes as scenes_directory {
 		for scene in scenes_directory {
@@ -90,9 +89,13 @@ void SceneManager::load_scene_graph(const std::string path) {
 
 void SceneManager::create_test_scene() {
 	test_scene = new Scene();
-	Object *test_object = new Object(
+	Object *test_object = new Object();
+	printf("new test object\n");
+	test_object->load_object(
 		"Testing path does not matter \
 		just need to trip the constructor"
 	);
-	test_scene->add_test_object_to_scene(test_object);
+	printf("new test object loaded\n");
+	test_scene->add_test_object_to_scene(*test_object);
+	printf("added new test object\n");
 }

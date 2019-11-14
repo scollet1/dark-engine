@@ -1,32 +1,30 @@
 #ifndef DARK_HPP
 #define DARK_HPP
 
-#include <algorithm>
+#include <ctime>
 #include <cstdlib>
 #include <cstring>
-#include <ctime>
 #include <fstream>
-#include <iostream>
 #include <utility>
+#include <iostream>
+#include <algorithm>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdexcept>
 
+#include <map>
+#include <set>
 #include <array>
 #include <deque>
-#include <functional>
-#include <map>
-#include <unordered_map>
-#include <set>
 #include <stack>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include <optional>
 #include <boost/optional.hpp>
-#include <boost/graph/adjacency_list.hpp>
 
 #include <stb_image.h>
 
