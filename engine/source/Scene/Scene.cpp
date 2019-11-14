@@ -73,5 +73,7 @@ void Scene::load() {
 }
 
 void Scene::add_test_object_to_scene(Object object) {
+	printf("huh\n");
 	objects.push_back(object);
+	printf("what\n");
 }

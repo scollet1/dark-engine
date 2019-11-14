@@ -21,9 +21,12 @@ std::vector<Object> DarkEngine::get_current_scene_objects() {
 
 
 bool DarkEngine::init_window(const char *title) {
+	printf("1\n");
 	glfwInit();
+	printf("2\n");
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	printf("3\n");
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	printf("creating draw window\n");
@@ -39,7 +42,7 @@ bool DarkEngine::init_window(const char *title) {
 	return (!!_window);
 }
 
-bool DarkEngine::getScreenRes() {
+bool DarkEngine::getScreenRes(const char *title) {
 //	// Get a handle to the desktop window
 //	const HWND hDesktop;
 //
@@ -49,9 +52,12 @@ bool DarkEngine::getScreenRes() {
 //	// The top left corner will have coordinates (0,0)
 //	// and the bottom right corner will have coordinates
 //	// (horizontal, vertical)
-	_display = XOpenDisplay(NULL);
+	printf("display bad\n");
+	if (!(_display = XOpenDisplay(NULL))) return FAILURE;
+	printf("display good\n");
 	_screen = DefaultScreenOfDisplay(_display);
-	return (true);
+	printf("screen bad\n");
+	return SUCCESS;
 }
 
 bool DarkEngine::_Init(const char *title, const char *name) {
@@ -62,12 +68,15 @@ bool DarkEngine::_Init(const char *title, const char *name) {
 	}
 
 	scene_manager = new SceneManager();
+	printf("nyaya\n");
 	scene_manager->create_test_scene();
-
-	if (getScreenRes() == FAILURE)
+	printf("hyaya\n");
+	if (getScreenRes(title) == FAILURE)
 		return (FAILURE);
+	printf("got screen res\n");
 	if (init_window(name) == FAILURE)
 		return (FAILURE);
+	printf("created window\n");
 
 	render_manager = new RenderManager(this);
 	if (render_manager->_Init(title, name) == FAILURE) {

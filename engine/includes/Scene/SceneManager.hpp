@@ -42,6 +42,9 @@ class SceneManager {
 	preloading
 	*/
 public:
+	SceneManager() {}
+	~SceneManager() {}
+	
 	// Scene *get_current_scene() {return scenes[current_scene];}
 	Scene *get_current_test_scene() {return test_scene;}
 

@@ -2,7 +2,7 @@ NAME = DarkEngine
 
 TEST := $(if $(TARGET),$(TARGET),RUN)
 
-CC = g++ -std=c++11
+CC = g++
 
 SRC_DIR = source
 INC_DIR = includes
@@ -16,13 +16,14 @@ VK_PATH = ./VulkanSDK/$(VK_VERSION)/$(ARCHITECTURE)
 STB_INCLUDE_PATH = ./stb/
 TOBJ_INCLUDE_PATH = ./tiny_obj_loader
 
-INCL = -I $(INC_DIR) -I$(VK_PATH)/include/ -I$(STB_INCLUDE_PATH) -I$(TOBJ_INCLUDE_PATH)
+INCL = -I $(INC_DIR) \
+		-I$(VK_PATH)/include/ \
+		-I$(STB_INCLUDE_PATH) \
+		-I$(TOBJ_INCLUDE_PATH)
 
 CFLAGS  = -Wall -Wextra -g # -Werror 
 
-LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
-
-# MINILIB = ./mini_lib/
+LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan -lX11
 
 # SRC_FILES = testing/testengine.cpp
 SRC_FILES = Engine/DarkEngine.cpp \
