@@ -49,7 +49,7 @@ void Object::load_model(const char *path) {
 	}
 }
 
-void Object::load_object(const std::string path) {
+void Object::load_object(const char *path) {
 	/*
 	with open path as file {
 		load_model(file.model_path);
@@ -64,6 +64,6 @@ void Object::load_object(const std::string path) {
 }
 
 bool Object::_Init(const std::string path) {
-	load_object(path);
+	load_object(path.c_str());
 	return SUCCESS;
 }

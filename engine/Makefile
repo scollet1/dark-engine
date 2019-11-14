@@ -2,7 +2,7 @@ NAME = DarkEngine
 
 TEST := $(if $(TARGET),$(TARGET),RUN)
 
-CC = g++
+CC = g++ -std=c++11
 
 SRC_DIR = source
 INC_DIR = includes
@@ -37,6 +37,7 @@ SRC_FILES = Engine/DarkEngine.cpp \
 			Render/Surface.cpp \
 			Render/SwapChain.cpp \
 			Render/Validation.cpp \
+			Assets/Object.cpp \
 			texture/texture.cpp \
 			main.c
 

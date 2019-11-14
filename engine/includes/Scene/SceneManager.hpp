@@ -1,12 +1,16 @@
 #ifndef SCENEMANAGER_HPP
 #define SCENEMANAGER_HPP
 
+#include "../dark.hpp"
 #include "./Scene.hpp"
 #include "../Assets/Object.hpp"
 
+#include <boost/graph/graph_utility.hpp>
+#include <boost/graph/adjacency_list.hpp>
+
 struct SceneEdge {
 	int place_holder;
-}
+};
 
 typedef boost::adjacency_list<
 	boost::listS,
@@ -38,7 +42,7 @@ class SceneManager {
 	preloading
 	*/
 public:
-	Scene *get_current_scene() {return scenes[current_scene];}
+	// Scene *get_current_scene() {return scenes[current_scene];}
 	Scene *get_current_test_scene() {return test_scene;}
 
 	void load_assets_to_job_queue(Scene *scene, bool deferred
@@ -68,7 +72,7 @@ private:
 	Graph *scenes;
 	*/
 	SceneGraph scenes;
-	SceneDescriptor *current_scene;
+	SceneDescriptor current_scene;
 	Scene *test_scene;
 };
 

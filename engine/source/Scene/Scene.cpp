@@ -72,6 +72,6 @@ void Scene::load() {
 	load_assets(); // alias
 }
 
-void Scene::add_test_object_to_scene(Object *object) {
-	objects.push_back(*object);
+void Scene::add_test_object_to_scene(Object object) {
+	objects.push_back(object);
 }
