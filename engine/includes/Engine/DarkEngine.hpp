@@ -1,13 +1,12 @@
 #ifndef DARKENGINE_H
 #define DARKENGINE_H
 
+#include <X11/Xlib.h>
+
 #include "../dark.hpp"
 #include "./Environ.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../Render/RenderManager.hpp"
-
-#include <GLFW/glfw3.h>
-#include <X11/Xlib.h>
 
 #ifndef SCRNWOFFS
 #define SCRNWOFFS -100
@@ -57,7 +56,7 @@ public:
 	static void	framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
-	bool getScreenRes();
+	bool getScreenRes(const char *title);
 
 	// ThreadPool              *thrpool;
 	RenderManager *render_manager;
