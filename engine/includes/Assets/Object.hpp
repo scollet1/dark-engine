@@ -1,29 +1,42 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
+#include <unordered_map>
+
 #include "../dark.hpp"
+#include "../vertex/vertex.hpp"
 #include "../texture/texture.hpp"
 
 // store in file
-const std::string MODEL_PATH = "/home/samurai/dark-engine/engine/source/render/models/chalet.obj";
-const std::string TEXTURE_PATH = "/home/samurai/dark-engine/engine/source/render/textures/chalet.jpg";
+const std::string MODEL_PATH = "/home/samurai/dark-engine/engine/source/Render/models/chalet.obj";
+const std::string TEXTURE_PATH = "/home/samurai/dark-engine/engine/source/Render/textures/chalet.jpg";
 
 class Object { // : public Asset {
 	/*
-	2d and 3d objects
+	2d and 3d objects for now
 	*/
 public:
 	Object() {}
-	Object(const std::string path) {
-		load_object(path);
+	~Object() {}
+	Object(const Object &rhs) {
+		texture = rhs.texture;
+		vertices = rhs.vertices;
+		indices = rhs.indices;
 	}
+	Object operator=(const Object &rhs) {
+		texture = rhs.texture;
+		// vertices = vertices;
+		// indices = indices;
+		return *this;
+	}
+	bool _Init(const std::string path);
 
 	Texture *get_texture() {return texture;}
 	std::vector<Vertex> get_vertices() {return vertices;}
 	std::vector<uint32_t> get_indices() {return indices;}
 
-	void load_model(const std::string path);
-	void load_object(const std::string path);
+	void load_model(const char *path);
+	void load_object(const char *path);
 
 private:
 	Texture *texture;

@@ -73,6 +73,10 @@ VkImageView RenderManager::create_image_view(
 }
 
 void RenderManager::create_image_views() {
+	//
+}
+
+void RenderManager::create_swap_chain_image_views() {
 	swapChainImageViews.resize(swapChainImages.size());
 
 	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
@@ -83,10 +87,10 @@ void RenderManager::create_image_views() {
 	}
 }
 
-VkImage RenderManager::create_texture_image(Texture texture) {
-	VkDeviceSize imageSize = texture.width * texture.height * 4;
+VkImage RenderManager::create_texture_image(Texture *texture) {
+	VkDeviceSize imageSize = texture->width * texture->height * 4;
 	VkImage texture_image;
-	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1;
+	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texture->width, texture->height)))) + 1;
 
 	VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -100,13 +104,13 @@ VkImage RenderManager::create_texture_image(Texture texture) {
 
 	void* data;
 	vkMapMemory(_device, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, texture.pixels, static_cast<size_t>(imageSize));
+	memcpy(data, texture->pixels, static_cast<size_t>(imageSize));
 	vkUnmapMemory(_device, stagingBufferMemory);
 
-	stbi_image_free(texture.pixels);
+	stbi_image_free(texture->pixels);
 
 	create_image(
-		texture.width, texture.height, mipLevels,
+		texture->width, texture->height, mipLevels,
 		VK_SAMPLE_COUNT_1_BIT,
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -126,8 +130,8 @@ VkImage RenderManager::create_texture_image(Texture texture) {
     );
     copyBufferToImage(
     	stagingBuffer, texture_image,
-    	static_cast<uint32_t>(texture.width),
-    	static_cast<uint32_t>(texture.height)
+    	static_cast<uint32_t>(texture->width),
+    	static_cast<uint32_t>(texture->height)
     );
 
     //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
@@ -137,23 +141,13 @@ VkImage RenderManager::create_texture_image(Texture texture) {
 	return texture_image;
 }
 
-void RenderManager::create_texture_images() {
-	VkImage current_texture_image;
-	std::vector<Object>::iterator i;
-	std::vector<Object> current_scene_objects;
+// bool RenderManager::create_texture_images(std::vector<Object> objects) {
+// 	std::vector<Object>::iterator i;
+// 	std::vector<Object> current_scene_objects;
 
-	current_scene_objects = dark_engine.get_current_scene_objects();
-	if (current_scene_objects) {
-		for (i = current_scene_objects.begin(); i != current_scene_objects.end(); i++) {
-			current_texture_image = create_texture_image((*i).get_texture());
-			if (current_texture_image) {
-				texture_images.push_back(current_texture_image);
-			} else {
-				throw std::runtime_error("failed to create texture image" + (*i).get_texture().path);
-			}
-		}
-	}
-}
+
+// 	return SUCCESS;
+// }
 
 VkImageView RenderManager::create_texture_image_view(VkImage texture_image) {
 	return create_image_view(
@@ -180,3 +174,9 @@ void RenderManager::destroy_texture_images() {
 	}
 }
 
+bool RenderManager::initialize_swap_chain() {
+	if (createSwapChain() == FAILURE)
+		return (FAILURE);	// swap chain
+	create_swap_chain_image_views();
+	return SUCCESS;
+}
