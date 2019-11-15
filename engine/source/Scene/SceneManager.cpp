@@ -39,10 +39,8 @@ void SceneManager::transition_to(SceneDescriptor new_scene) {
 }
 
 void SceneManager::load_scene(SceneDescriptor s) {
-	// Scene scene;
-	// scene = scenes[s];
-	
-	// load_assets(scene);
+	scenes[s].load_assets();
+
 	// if (dark_engine.get_options().optimzations.preload_scenes) {
 	// 	auto neighbors = boost::adjacent_vertices(s, scenes);
 
@@ -64,7 +62,7 @@ void SceneManager::load_scene_graph(const std::string path) {
 	with open path + scenes as scenes_directory {
 		for scene in scenes_directory {
 			// need to be serialized in order
-			s_desc = boost::add_vertex(scenes);
+			s_desc = boost::add_vertex(scene);
 			resolve_list.push_back(s_desc);
 			// create_scene(s_desc);
 		}
@@ -85,17 +83,21 @@ void SceneManager::load_scene_graph(const std::string path) {
 	current_scene = resolve_list[0];
 	load_scene(current_scene);
 	*/
+	test_scene = new Scene();
+	SceneDescriptor s_desc = boost::add_vertex(scenes);
+	boost::add_edge(s_desc, s_desc, scenes);
+	load_scene(s_desc);
+	printf("new test object loaded\n");
 }
 
-void SceneManager::create_test_scene() {
-	test_scene = new Scene();
-	Object *test_object = new Object();
-	printf("new test object\n");
-	test_object->load_object(
-		"Testing path does not matter \
-		just need to trip the constructor"
-	);
-	printf("new test object loaded\n");
-	test_scene->add_test_object_to_scene(*test_object);
-	printf("added new test object\n");
-}
+// void SceneManager::create_test_scene() {
+// 	printf("new test object\n");
+// 	test_object->load_object(
+// 		"Testing path does not matter \
+// 		just need to trip the constructor"
+// 	);
+// 	printf("new test object loaded\n");
+// 	test_scene->add_test_object_to_scene(*test_object);
+// 	printf("added new test object\n");
+// 	test_scenes.push_back(test_scene);
+// }

@@ -73,6 +73,10 @@ VkImageView RenderManager::create_image_view(
 }
 
 void RenderManager::create_image_views() {
+	//
+}
+
+void RenderManager::create_swap_chain_image_views() {
 	swapChainImageViews.resize(swapChainImages.size());
 
 	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
@@ -180,3 +184,9 @@ void RenderManager::destroy_texture_images() {
 	}
 }
 
+bool RenderManager::initialize_swap_chain() {
+	if (createSwapChain() == FAILURE)
+		return (FAILURE);	// swap chain
+	create_swap_chain_image_views();
+	return SUCCESS;
+}

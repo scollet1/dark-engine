@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdexcept>
+#include <execinfo.h>
+#include <signal.h>
 
 #include <map>
 #include <set>

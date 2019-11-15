@@ -14,8 +14,8 @@ struct SceneEdge {
 
 typedef boost::adjacency_list<
 	boost::listS,
-	boost::vecS,boost::undirectedS,
-	boost::no_property,
+	boost::vecS,
+	boost::undirectedS,
 	Scene, SceneEdge
 >SceneGraph;
 
@@ -60,9 +60,9 @@ public:
 	void load_assets(Scene *scene);
 	void preload_assets(Scene *scene);
 	void create_test_scene();
+	void load_scene_graph(const std::string path);
 
 private:
-	void load_scene_graph(const std::string path);
 	void transition_to(SceneDescriptor new_scene);
 	/*
 	here I'm not so sure we'll always be able to

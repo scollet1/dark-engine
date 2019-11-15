@@ -7,6 +7,14 @@ void Scene::load_assets() {
 	// 	// hand it a callback
 	// 	asset_manager.load_asset(i, asset_loaded);
 	// }
+	Object test_object = Object();
+	test_object.load_object(
+		"Testing path does not matter \
+		just need to trip the constructor"
+	);
+	printf("assets loading\n");
+	objects.push_back(test_object);
+	printf("assets loaded\n");
 }
 
 bool Scene::transitioned() {

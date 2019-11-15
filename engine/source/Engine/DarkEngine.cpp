@@ -21,42 +21,26 @@ std::vector<Object> DarkEngine::get_current_scene_objects() {
 
 
 bool DarkEngine::init_window(const char *title) {
-	printf("1\n");
-	glfwInit();
-	printf("2\n");
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	printf("3\n");
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	printf("creating draw window\n");
-	_window = glfwCreateWindow(
+	if (!(_window = glfwCreateWindow(
 		getScreenWidth(), getScreenHeight(),
 		/*
 		full screen or windowed ops
 		user configurable
 		*/
-		title, nullptr/*glfwGetPrimaryMonitor()*/, nullptr);
+		title, nullptr/*glfwGetPrimaryMonitor()*/, nullptr))) {
+		return FAILURE;
+	}
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 	return (!!_window);
 }
 
-bool DarkEngine::getScreenRes(const char *title) {
-//	// Get a handle to the desktop window
-//	const HWND hDesktop;
-//
-//	hDesktop = GetDesktopWindow();
-//	// Get the size of screen to the variable desktop
-//	GetWindowRect(hDesktop, &desktop);
-//	// The top left corner will have coordinates (0,0)
-//	// and the bottom right corner will have coordinates
-//	// (horizontal, vertical)
-	printf("display bad\n");
-	if (!(_display = XOpenDisplay(NULL))) return FAILURE;
-	printf("display good\n");
-	_screen = DefaultScreenOfDisplay(_display);
-	printf("screen bad\n");
+bool DarkEngine::init_glfw() {
+	if (!glfwInit()) return FAILURE;
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	if (!(monitor = glfwGetPrimaryMonitor())) return FAILURE;
+	screen = (GLFWvidmode*)glfwGetVideoMode(monitor);
 	return SUCCESS;
 }
 
@@ -67,18 +51,14 @@ bool DarkEngine::_Init(const char *title, const char *name) {
 		return FAILURE;
 	}
 
+	if (init_glfw() == FAILURE) return FAILURE;
+	if (init_window(name) == FAILURE) return FAILURE;
+
 	scene_manager = new SceneManager();
-	printf("nyaya\n");
-	scene_manager->create_test_scene();
-	printf("hyaya\n");
-	if (getScreenRes(title) == FAILURE)
-		return (FAILURE);
-	printf("got screen res\n");
-	if (init_window(name) == FAILURE)
-		return (FAILURE);
-	printf("created window\n");
+	scene_manager->load_scene_graph("");
 
 	render_manager = new RenderManager(this);
+	printf("created render man\n");
 	if (render_manager->_Init(title, name) == FAILURE) {
 		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), "renderer init failed"));
 	}
