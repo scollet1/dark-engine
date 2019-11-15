@@ -1135,7 +1135,7 @@ bool    RenderManager::_Destroy() {
 	cleanupSwapChain();
        
 	vkDestroySampler(_device, textureSampler, nullptr);
-	
+
     vkDestroyImageView(_device, textureImageView, nullptr);
     destroy_texture_images();
 
@@ -1207,36 +1207,23 @@ bool    RenderManager::_Init(const char *title, const char *name) {
 		return (FAILURE);
 	if (createIndexBuffer() == FAILURE)
 		return (FAILURE);
-	printf("yyyy\n");
 	if (createUniformBuffers() == FAILURE)
 		return (FAILURE);
-	printf("yyyy\n");
 	if (createDescriptorPool() == FAILURE)
 		return (FAILURE);
-	printf("yyyy\n");
 	if (createDescriptorSets() == FAILURE)
 		return (FAILURE);
-	printf("yyyy\n");
 	if (createCommandBuffers() == FAILURE)
 		return (FAILURE);	// command buffers
-	printf("yyyy\n");
 	if (createSyncObjects() == FAILURE)
 		return (FAILURE);
 	printf("rendering manager ready to roll\n");
 //	createSemaphores(); // semaphores
-	// init ...
-	// vertex buffers
-	// sync objects
-	return (true);
-}
-
-bool    RenderManager::_Run() {
-	// moved to engine
 	return SUCCESS;
 }
 
 bool	RenderManager::_Test() {
 	printf("entering main test loop\n");
-	_Run();
+	// _Run();
 	return (SUCCESS);
 }
