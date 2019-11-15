@@ -40,6 +40,7 @@ void SceneManager::transition_to(SceneDescriptor new_scene) {
 
 void SceneManager::load_scene(SceneDescriptor s) {
 	scenes[s].load_assets();
+	assert(scenes[s].get_all_objects().size());
 
 	// if (dark_engine.get_options().optimzations.preload_scenes) {
 	// 	auto neighbors = boost::adjacent_vertices(s, scenes);
@@ -83,11 +84,11 @@ void SceneManager::load_scene_graph(const std::string path) {
 	current_scene = resolve_list[0];
 	load_scene(current_scene);
 	*/
-	test_scene = new Scene();
 	SceneDescriptor s_desc = boost::add_vertex(scenes);
 	boost::add_edge(s_desc, s_desc, scenes);
 	load_scene(s_desc);
 	printf("new test object loaded\n");
+	current_scene = s_desc;
 }
 
 // void SceneManager::create_test_scene() {

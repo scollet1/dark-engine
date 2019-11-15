@@ -213,27 +213,44 @@ void RenderManager::compile_indices(std::vector<uint32_t> obj_indices) {
 	}
 }
 
-void RenderManager::compile_objects(std::vector<Object> objects) {
+bool RenderManager::compile_objects() {
+	std::vector<Object> current_scene_objects;
+	current_scene_objects = dark_engine->get_current_scene_objects();
+	printf("current scene has %i assets to render\n", current_scene_objects.size());
+
 	Texture *obj_texture;
-	std::vector<Object>::iterator i;
+	VkImage current_texture_image;
 	std::vector<Vertex> obj_vertices;
 	std::vector<uint32_t> obj_indices;
 
-	for (i = objects.begin(); i != objects.end(); i++) {
-		obj_vertices = (*i).get_vertices();
-		compile_vertices(obj_vertices);
-		obj_indices = (*i).get_indices();
-		compile_indices(obj_indices);
-		obj_texture = (*i).get_texture();
-		texture_images.push_back(create_texture_image(obj_texture));
+	if (current_scene_objects.size()) {
+		for (size_t i = 0; i < current_scene_objects.size(); i++) {
+			obj_vertices = current_scene_objects[i].get_vertices();
+			compile_vertices(obj_vertices);
+			obj_indices = current_scene_objects[i].get_indices();
+			compile_indices(obj_indices);
+			obj_texture = current_scene_objects[i].get_texture();
+
+			current_texture_image = create_texture_image(obj_texture);
+			if (current_texture_image) {
+				texture_images.push_back(current_texture_image);
+			} else {
+				throw std::runtime_error("failed to create texture image");// (*i).get_texture()->path);
+			}
+		}
+	} else {
+		return FAILURE;
 	}
+
+	return SUCCESS;
 }
 
 bool RenderManager::createVertexBuffer() {
+    printf("creating vertex buffer\n");
 	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 	VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    
+
 	createBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -260,6 +277,7 @@ bool RenderManager::createVertexBuffer() {
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
 
+    printf("vertex buffer created\n");
 	return (SUCCESS);
 }
 
@@ -398,17 +416,17 @@ bool							RenderManager::createCommandPool() {
 	
 	if (vkCreateCommandPool(_device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create command pool!");
-		return(FAILURE);
 	}
 
 	return (SUCCESS);
 }
 
-bool							RenderManager::createFrameBuffers() {
+bool RenderManager::createFrameBuffers() {
 	printf("creating frame buffers\n");
 
 	swapChainFramebuffers.resize(swapChainImageViews.size());
 	for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+		std::cout << i << std::endl;
         std::array<VkImageView, 3> attachments = {
             colorImageView,
             depthImageView,
@@ -428,8 +446,8 @@ bool							RenderManager::createFrameBuffers() {
 	        throw std::runtime_error("failed to create framebuffer!");
 	    }
 	}
-
-	return (SUCCESS);
+	printf("frame buffers created\n");
+	return SUCCESS;
 }
 
 bool							RenderManager::createRenderPass() {
@@ -847,6 +865,7 @@ void	RenderManager::draw_frame() {
 
 
 bool RenderManager::createIndexBuffer() {
+	printf("creating index buffer\n");
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
     VkBuffer stagingBuffer;
@@ -865,6 +884,7 @@ bool RenderManager::createIndexBuffer() {
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
 
+    printf("index buffer created\n");
     return (SUCCESS);
 }
 
@@ -1051,7 +1071,6 @@ void RenderManager::createColorResources() {
 
     create_image(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
     colorImageView = create_image_view(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-
     transitionImageLayout(colorImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1);
 }
 
@@ -1175,10 +1194,9 @@ bool    RenderManager::_Init(const char *title, const char *name) {
     createColorResources();
  	if (createDepthResources() == FAILURE)
  		return (FAILURE);
-	if (createFrameBuffers() == FAILURE)
-		return (FAILURE);	// frame buffers
+	if (createFrameBuffers() == FAILURE) return (FAILURE);	// frame buffers
 
-	create_texture_images();
+    compile_objects();
 
     create_texture_image_views();
     if (createTextureSampler() == FAILURE)
@@ -1187,17 +1205,22 @@ bool    RenderManager::_Init(const char *title, const char *name) {
 		return (FAILURE);
 	if (createIndexBuffer() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createUniformBuffers() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createDescriptorPool() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createDescriptorSets() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createCommandBuffers() == FAILURE)
 		return (FAILURE);	// command buffers
+	printf("yyyy\n");
 	if (createSyncObjects() == FAILURE)
 		return (FAILURE);
-
+	printf("rendering manager ready to roll\n");
 //	createSemaphores(); // semaphores
 	// init ...
 	// vertex buffers

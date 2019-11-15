@@ -45,8 +45,7 @@ public:
 	SceneManager() {}
 	~SceneManager() {}
 	
-	// Scene *get_current_scene() {return scenes[current_scene];}
-	Scene *get_current_test_scene() {return test_scene;}
+	Scene get_current_scene() {return scenes[current_scene];}
 
 	void load_assets_to_job_queue(Scene *scene, bool deferred
 		/*
@@ -76,7 +75,6 @@ private:
 	*/
 	SceneGraph scenes;
 	SceneDescriptor current_scene;
-	Scene *test_scene;
 };
 
 #endif // SCENEMANAGER_HPP

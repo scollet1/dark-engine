@@ -8,6 +8,7 @@
 #include <utility>
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 
 #include <stdio.h>
 #include <stdlib.h>
