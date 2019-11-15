@@ -141,23 +141,13 @@ VkImage RenderManager::create_texture_image(Texture *texture) {
 	return texture_image;
 }
 
-void RenderManager::create_texture_images() {
-	VkImage current_texture_image;
-	std::vector<Object>::iterator i;
-	std::vector<Object> current_scene_objects;
+// bool RenderManager::create_texture_images(std::vector<Object> objects) {
+// 	std::vector<Object>::iterator i;
+// 	std::vector<Object> current_scene_objects;
 
-	current_scene_objects = dark_engine->get_current_scene_objects();
-	if (current_scene_objects.size()) {
-		for (i = current_scene_objects.begin(); i != current_scene_objects.end(); i++) {
-			current_texture_image = create_texture_image((*i).get_texture());
-			if (current_texture_image) {
-				texture_images.push_back(current_texture_image);
-			} else {
-				throw std::runtime_error("failed to create texture image");// (*i).get_texture()->path);
-			}
-		}
-	}
-}
+
+// 	return SUCCESS;
+// }
 
 VkImageView RenderManager::create_texture_image_view(VkImage texture_image) {
 	return create_image_view(

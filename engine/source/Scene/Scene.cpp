@@ -14,6 +14,7 @@ void Scene::load_assets() {
 	);
 	printf("assets loading\n");
 	objects.push_back(test_object);
+	assert(objects.size());
 	printf("assets loaded\n");
 }
 

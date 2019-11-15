@@ -16,7 +16,7 @@ std::vector<Object> DarkEngine::get_current_scene_objects() {
 		...
 	}
 	*/
-	return scene_manager->get_current_test_scene()->get_all_objects();
+	return scene_manager->get_current_scene().get_all_objects();
 }
 
 

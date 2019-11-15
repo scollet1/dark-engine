@@ -32,11 +32,11 @@ const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-#ifdef NDEBUG
-	const bool enableValidationLayers = false;
-#else
+// #ifdef NDEBUG
+	// const bool enableValidationLayers = false;
+// #else
 	const bool enableValidationLayers = true;
-#endif
+// #endif
 
 struct SwapChainSupportDetails {
 	VkSurfaceCapabilitiesKHR capabilities;
@@ -124,7 +124,7 @@ private:
 	bool createDescriptorSets();
 	VkSampleCountFlagBits getMaxUsableSampleCount();
 	void create_texture_image_views();
-	void create_texture_images();
+	bool create_texture_images();
 	bool 									createIndexBuffer();
 	bool									pickPhysicalDevice();
 	int										rateDeviceSuitability(VkPhysicalDevice device);
@@ -157,7 +157,7 @@ private:
 
 	void compile_vertices(std::vector<Vertex> obj_vertices);
 	void compile_indices(std::vector<uint32_t> obj_indices);
-	void compile_objects(std::vector<Object> objects);
+	bool compile_objects();
 
 	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 	bool hasStencilComponent(VkFormat format);
