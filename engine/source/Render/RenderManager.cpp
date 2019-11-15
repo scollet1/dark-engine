@@ -185,7 +185,9 @@ bool RenderManager::createBuffer(
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(_device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+    int status;
+    if ((status = vkAllocateMemory(_device, &allocInfo, nullptr, &bufferMemory)) != VK_SUCCESS) {
+    	std::cout << status << std::endl;
         throw std::runtime_error("failed to allocate buffer memory!");
         return (FAILURE);
     }
@@ -211,27 +213,44 @@ void RenderManager::compile_indices(std::vector<uint32_t> obj_indices) {
 	}
 }
 
-void RenderManager::compile_objects(std::vector<Object> objects) {
-	Texture obj_texture;
-	std::vector<Object>::iterator i;
+bool RenderManager::compile_objects() {
+	std::vector<Object> current_scene_objects;
+	current_scene_objects = dark_engine->get_current_scene_objects();
+	printf("current scene has %i assets to render\n", current_scene_objects.size());
+
+	Texture *obj_texture;
+	VkImage current_texture_image;
 	std::vector<Vertex> obj_vertices;
 	std::vector<uint32_t> obj_indices;
 
-	for (i = objects.begin(); i != objects.end(); i++) {
-		obj_vertices = (*i).get_vertices();
-		compile_vertices(obj_vertices);
-		obj_indices = (*i).get_indices();
-		compile_indices(obj_indices);
-		obj_texture = *(*i).get_texture();
-		texture_images.push_back(create_texture_image(obj_texture));
+	if (current_scene_objects.size()) {
+		for (size_t i = 0; i < current_scene_objects.size(); i++) {
+			obj_vertices = current_scene_objects[i].get_vertices();
+			compile_vertices(obj_vertices);
+			obj_indices = current_scene_objects[i].get_indices();
+			compile_indices(obj_indices);
+			obj_texture = current_scene_objects[i].get_texture();
+
+			current_texture_image = create_texture_image(obj_texture);
+			if (current_texture_image) {
+				texture_images.push_back(current_texture_image);
+			} else {
+				throw std::runtime_error("failed to create texture image");// (*i).get_texture()->path);
+			}
+		}
+	} else {
+		return FAILURE;
 	}
+
+	return SUCCESS;
 }
 
 bool RenderManager::createVertexBuffer() {
+    printf("creating vertex buffer\n");
 	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 	VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    
+
 	createBuffer(
 		bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -258,6 +277,7 @@ bool RenderManager::createVertexBuffer() {
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
 
+    printf("vertex buffer created\n");
 	return (SUCCESS);
 }
 
@@ -393,21 +413,20 @@ bool							RenderManager::createCommandPool() {
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.queueFamilyIndex = qfi.graphicsFamily.second;
 	poolInfo.flags = 0; // Optional
-
 	
 	if (vkCreateCommandPool(_device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create command pool!");
-		return(FAILURE);
 	}
 
 	return (SUCCESS);
 }
 
-bool							RenderManager::createFrameBuffers() {
+bool RenderManager::createFrameBuffers() {
 	printf("creating frame buffers\n");
 
 	swapChainFramebuffers.resize(swapChainImageViews.size());
 	for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+		std::cout << i << std::endl;
         std::array<VkImageView, 3> attachments = {
             colorImageView,
             depthImageView,
@@ -427,8 +446,8 @@ bool							RenderManager::createFrameBuffers() {
 	        throw std::runtime_error("failed to create framebuffer!");
 	    }
 	}
-
-	return (SUCCESS);
+	printf("frame buffers created\n");
+	return SUCCESS;
 }
 
 bool							RenderManager::createRenderPass() {
@@ -532,7 +551,9 @@ bool RenderManager::createGraphicsPipeline() {
 	fragShaderStageInfo.module = fragShaderModule;
 	fragShaderStageInfo.pName = "main";
 
-	VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+	VkPipelineShaderStageCreateInfo shaderStages[] = {
+		vertShaderStageInfo, fragShaderStageInfo
+	};
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -640,8 +661,6 @@ bool RenderManager::createGraphicsPipeline() {
 	vkDestroyShaderModule(_device, fragShaderModule, nullptr);
 	vkDestroyShaderModule(_device, vertShaderModule, nullptr);
 
-	printf("donezo\n");
-
 	return (!!graphicsPipeline);
 }
 
@@ -704,10 +723,12 @@ QueueFamilyIndices				RenderManager::findQueueFamilies(VkPhysicalDevice device) 
 	return (indices);
 }
 																// TODO : more verbose var names
-bool									RenderManager::createInstance(const char *title, const char *name) {
+bool RenderManager::createInstance(const char *title, const char *name) {
+	printf("ooof\n");
 	if (enableValidationLayers && !checkValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
+	printf("ooof\n");
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -717,24 +738,36 @@ bool									RenderManager::createInstance(const char *title, const char *name) 
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
+	printf("ooof\n");
+
 	VkInstanceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
+	printf("ooof\n");
 
 	auto extensions = getRequiredExtensions();
+	printf("ooof\n");
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
+	printf("ooof\n");
 
+	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 	if (enableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
+
+		populateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
 	} else {
 		createInfo.enabledLayerCount = 0;
+		createInfo.pNext = nullptr;
 	}
+	printf("ooof7\n");
 
 	if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance!");
 	}
+	printf("ooof\n");
 	return (!!_instance);
 }
 
@@ -832,6 +865,7 @@ void	RenderManager::draw_frame() {
 
 
 bool RenderManager::createIndexBuffer() {
+	printf("creating index buffer\n");
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
     VkBuffer stagingBuffer;
@@ -850,6 +884,7 @@ bool RenderManager::createIndexBuffer() {
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
 
+    printf("index buffer created\n");
     return (SUCCESS);
 }
 
@@ -1036,7 +1071,6 @@ void RenderManager::createColorResources() {
 
     create_image(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
     colorImageView = create_image_view(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-
     transitionImageLayout(colorImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1);
 }
 
@@ -1132,8 +1166,7 @@ bool    RenderManager::_Destroy() {
 	return (SUCCESS);
 }
 
-bool    RenderManager::_Init(const char *title, const char *name) {
-	// TODO : make dynamic
+bool RenderManager::initialize_vulkan(const char *title, const char *name) {
 	if (createInstance(title, name) == FAILURE)	// instance
 		return (FAILURE);
 	if (setupDebugCallback() == FAILURE)
@@ -1144,13 +1177,12 @@ bool    RenderManager::_Init(const char *title, const char *name) {
 		return (FAILURE);	// physical device
 	if (createLogicalDevice() == FAILURE)
 		return (FAILURE);	// logical device
-    printf("create swap one\n");
+}
 
-	if (createSwapChain() == FAILURE)
-		return (FAILURE);	// swap chain
-    printf("done create swap one\n");
+bool    RenderManager::_Init(const char *title, const char *name) {
+    initialize_vulkan(title, name);
+	initialize_swap_chain();
 
-	create_image_views();
 	if (createRenderPass() == FAILURE)
 		return (FAILURE);	// render pass
 	if (createDescriptorSetLayout() == FAILURE)
@@ -1162,32 +1194,33 @@ bool    RenderManager::_Init(const char *title, const char *name) {
     createColorResources();
  	if (createDepthResources() == FAILURE)
  		return (FAILURE);
-	if (createFrameBuffers() == FAILURE)
-		return (FAILURE);	// frame buffers
+	if (createFrameBuffers() == FAILURE) return (FAILURE);	// frame buffers
 
-	create_texture_images();
+    compile_objects();
 
     create_texture_image_views();
     if (createTextureSampler() == FAILURE)
     	return (FAILURE);
-
-    // loadModel(); // moved to AssetQueue.cpp
-	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);
 	if (createIndexBuffer() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createUniformBuffers() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createDescriptorPool() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createDescriptorSets() == FAILURE)
 		return (FAILURE);
+	printf("yyyy\n");
 	if (createCommandBuffers() == FAILURE)
 		return (FAILURE);	// command buffers
+	printf("yyyy\n");
 	if (createSyncObjects() == FAILURE)
 		return (FAILURE);
-
+	printf("rendering manager ready to roll\n");
 //	createSemaphores(); // semaphores
 	// init ...
 	// vertex buffers

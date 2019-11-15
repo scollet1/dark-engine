@@ -1,33 +1,45 @@
 #ifndef DARK_HPP
 #define DARK_HPP
 
-#include <algorithm>
+#include <ctime>
 #include <cstdlib>
 #include <cstring>
-#include <ctime>
 #include <fstream>
-#include <iostream>
 #include <utility>
+#include <iostream>
+#include <algorithm>
+#include <cassert>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdexcept>
+#include <execinfo.h>
+#include <signal.h>
 
+#include <map>
+#include <set>
 #include <array>
 #include <deque>
-#include <functional>
-#include <map>
-#include <unordered_map>
-#include <set>
 #include <stack>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include <optional>
 #include <boost/optional.hpp>
 
 #include <stb_image.h>
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include "./defined.h"
 

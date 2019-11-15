@@ -16,17 +16,20 @@ VK_PATH = ./VulkanSDK/$(VK_VERSION)/$(ARCHITECTURE)
 STB_INCLUDE_PATH = ./stb/
 TOBJ_INCLUDE_PATH = ./tiny_obj_loader
 
-INCL = -I $(INC_DIR) -I$(VK_PATH)/include/ -I$(STB_INCLUDE_PATH) -I$(TOBJ_INCLUDE_PATH)
+INCL = -I $(INC_DIR) \
+		-I$(VK_PATH)/include/ \
+		-I$(STB_INCLUDE_PATH) \
+		-I$(TOBJ_INCLUDE_PATH)
 
 CFLAGS  = -Wall -Wextra -g # -Werror 
 
-LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
-
-# MINILIB = ./mini_lib/
+LDFLAGS = -L $(VK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan -lX11
 
 # SRC_FILES = testing/testengine.cpp
 SRC_FILES = Engine/DarkEngine.cpp \
 			Engine/Environ.cpp \
+			Scene/Scene.cpp \
+			Scene/SceneManager.cpp \
 			Render/RenderManager.cpp \
 			Render/Debug.cpp \
 			Render/Devices.cpp \
@@ -35,6 +38,7 @@ SRC_FILES = Engine/DarkEngine.cpp \
 			Render/Surface.cpp \
 			Render/SwapChain.cpp \
 			Render/Validation.cpp \
+			Assets/Object.cpp \
 			texture/texture.cpp \
 			main.c
 

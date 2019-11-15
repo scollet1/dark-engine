@@ -1,17 +1,12 @@
 #ifndef DARKENGINE_H
 #define DARKENGINE_H
 
+#include <X11/Xlib.h>
+
 #include "../dark.hpp"
 #include "./Environ.hpp"
+#include "../Scene/SceneManager.hpp"
 #include "../Render/RenderManager.hpp"
-
-#ifndef GLFW_INCLUDE_VULKAN
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#endif
-
-#include <GLFW/glfw3.h>
-#include <X11/Xlib.h>
 
 #ifndef SCRNWOFFS
 #define SCRNWOFFS -100
@@ -40,10 +35,10 @@ public:
 	bool    _Destroy();
 
 	uint32_t getScreenWidth() {
-		return (_screen->width + SCRNWOFFS);
+		return 800;//(screen->width + SCRNWOFFS);
 	}
 	uint32_t getScreenHeight() {
-		return (_screen->height + SCRNHOFFS);
+		return 600;//(screen->height + SCRNHOFFS);
 	}
 
 	void set_frame_buffer_resized(bool stat) {framebufferResized = stat;}
@@ -61,20 +56,20 @@ public:
 	static void	framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
-	bool getScreenRes();
+	bool init_glfw();
 
 	// ThreadPool              *thrpool;
-	RenderManager               *render_manager;
+	RenderManager *render_manager;
+	SceneManager *scene_manager;
 	// Game                    *game;
 	Environ                 *Env;
 
 	/* GLFW specs */
 	GLFWwindow *_window;
-	Display *_display;
-	Screen *_screen;
+	GLFWmonitor *monitor;
+	GLFWvidmode *screen;
 	int	_width;
 	int	_height;
-
 	bool framebufferResized;
 };
 

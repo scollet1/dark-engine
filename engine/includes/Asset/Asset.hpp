@@ -1,6 +1,3 @@
-#ifndef ASSET_HPP
-#define ASSET_HPP
-
 class Asset {
 /*
 Each asset type inherits from this base Asset
@@ -20,5 +17,3 @@ public:
 private:
 
 };
-
-#endif // ASSET_HPP
