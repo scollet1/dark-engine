@@ -35,10 +35,10 @@ public:
 	bool    _Destroy();
 
 	uint32_t getScreenWidth() {
-		return (_screen->width + SCRNWOFFS);
+		return 800;//(screen->width + SCRNWOFFS);
 	}
 	uint32_t getScreenHeight() {
-		return (_screen->height + SCRNHOFFS);
+		return 600;//(screen->height + SCRNHOFFS);
 	}
 
 	void set_frame_buffer_resized(bool stat) {framebufferResized = stat;}
@@ -56,7 +56,7 @@ public:
 	static void	framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
-	bool getScreenRes(const char *title);
+	bool init_glfw();
 
 	// ThreadPool              *thrpool;
 	RenderManager *render_manager;
@@ -66,11 +66,10 @@ private:
 
 	/* GLFW specs */
 	GLFWwindow *_window;
-	Display *_display;
-	Screen *_screen;
+	GLFWmonitor *monitor;
+	GLFWvidmode *screen;
 	int	_width;
 	int	_height;
-
 	bool framebufferResized;
 };
 

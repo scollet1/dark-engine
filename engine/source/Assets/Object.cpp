@@ -58,9 +58,11 @@ void Object::load_object(const char *path) {
 	*/
 
 	(void)path;
-
+	printf("LOAD MODEL\n");
 	load_model(MODEL_PATH.c_str());
-	texture = load_texture(TEXTURE_PATH.c_str());
+	printf("LOAD TEXTURE\n");
+	if (!(texture = load_texture(TEXTURE_PATH.c_str()))) {;}
+	printf("TEXTURE LOADED\n");
 }
 
 bool Object::_Init(const std::string path) {

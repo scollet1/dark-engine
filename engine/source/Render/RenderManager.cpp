@@ -185,7 +185,9 @@ bool RenderManager::createBuffer(
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(_device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+    int status;
+    if ((status = vkAllocateMemory(_device, &allocInfo, nullptr, &bufferMemory)) != VK_SUCCESS) {
+    	std::cout << status << std::endl;
         throw std::runtime_error("failed to allocate buffer memory!");
         return (FAILURE);
     }
@@ -393,7 +395,6 @@ bool							RenderManager::createCommandPool() {
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.queueFamilyIndex = qfi.graphicsFamily.second;
 	poolInfo.flags = 0; // Optional
-
 	
 	if (vkCreateCommandPool(_device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create command pool!");
@@ -532,7 +533,9 @@ bool RenderManager::createGraphicsPipeline() {
 	fragShaderStageInfo.module = fragShaderModule;
 	fragShaderStageInfo.pName = "main";
 
-	VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+	VkPipelineShaderStageCreateInfo shaderStages[] = {
+		vertShaderStageInfo, fragShaderStageInfo
+	};
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -640,8 +643,6 @@ bool RenderManager::createGraphicsPipeline() {
 	vkDestroyShaderModule(_device, fragShaderModule, nullptr);
 	vkDestroyShaderModule(_device, vertShaderModule, nullptr);
 
-	printf("donezo\n");
-
 	return (!!graphicsPipeline);
 }
 
@@ -704,10 +705,12 @@ QueueFamilyIndices				RenderManager::findQueueFamilies(VkPhysicalDevice device) 
 	return (indices);
 }
 																// TODO : more verbose var names
-bool									RenderManager::createInstance(const char *title, const char *name) {
+bool RenderManager::createInstance(const char *title, const char *name) {
+	printf("ooof\n");
 	if (enableValidationLayers && !checkValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
+	printf("ooof\n");
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -717,24 +720,36 @@ bool									RenderManager::createInstance(const char *title, const char *name) 
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
+	printf("ooof\n");
+
 	VkInstanceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
+	printf("ooof\n");
 
 	auto extensions = getRequiredExtensions();
+	printf("ooof\n");
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
+	printf("ooof\n");
 
+	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 	if (enableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
+
+		populateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
 	} else {
 		createInfo.enabledLayerCount = 0;
+		createInfo.pNext = nullptr;
 	}
+	printf("ooof7\n");
 
 	if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance!");
 	}
+	printf("ooof\n");
 	return (!!_instance);
 }
 
@@ -1132,8 +1147,7 @@ bool    RenderManager::_Destroy() {
 	return (SUCCESS);
 }
 
-bool    RenderManager::_Init(const char *title, const char *name) {
-	// TODO : make dynamic
+bool RenderManager::initialize_vulkan(const char *title, const char *name) {
 	if (createInstance(title, name) == FAILURE)	// instance
 		return (FAILURE);
 	if (setupDebugCallback() == FAILURE)
@@ -1144,13 +1158,12 @@ bool    RenderManager::_Init(const char *title, const char *name) {
 		return (FAILURE);	// physical device
 	if (createLogicalDevice() == FAILURE)
 		return (FAILURE);	// logical device
-    printf("create swap one\n");
+}
 
-	if (createSwapChain() == FAILURE)
-		return (FAILURE);	// swap chain
-    printf("done create swap one\n");
+bool    RenderManager::_Init(const char *title, const char *name) {
+    initialize_vulkan(title, name);
+	initialize_swap_chain();
 
-	create_image_views();
 	if (createRenderPass() == FAILURE)
 		return (FAILURE);	// render pass
 	if (createDescriptorSetLayout() == FAILURE)
@@ -1170,9 +1183,6 @@ bool    RenderManager::_Init(const char *title, const char *name) {
     create_texture_image_views();
     if (createTextureSampler() == FAILURE)
     	return (FAILURE);
-
-    // loadModel(); // moved to AssetQueue.cpp
-	
 	if (createVertexBuffer() == FAILURE)
 		return (FAILURE);
 	if (createIndexBuffer() == FAILURE)

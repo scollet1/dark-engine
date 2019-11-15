@@ -98,8 +98,8 @@ public:
 private:
 	// TODO : move to utils.cpp
 	static std::vector<char>				readFile(const std::string& filename);
-
-
+	bool initialize_swap_chain();
+	bool initialize_vulkan(const char *title, const char *name);
 	bool									createInstance(const char *title, const char *name);
 	bool									createGraphicsPipeline();
 	bool									createRenderPass();
@@ -145,7 +145,8 @@ private:
 	VkCommandBuffer beginSingleTimeCommands();
 
 	bool createTextureSampler();
-
+	
+	void create_swap_chain_image_views();
 	void create_image_views();
 	VkImage create_texture_image(Texture *texture);
 	VkImageView create_texture_image_view(VkImage texture_image);
@@ -183,7 +184,7 @@ private:
 			VkDebugUtilsMessengerEXT callback,
 			const VkAllocationCallbacks* pAllocator
 			);
-
+	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
 	/* Platform specs */
 //	RECT						_desktop;

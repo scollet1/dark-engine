@@ -17,6 +17,18 @@ class Object { // : public Asset {
 	*/
 public:
 	Object() {}
+	~Object() {}
+	Object(const Object &rhs) {
+		texture = rhs.texture;
+		vertices = rhs.vertices;
+		indices = rhs.indices;
+	}
+	Object operator=(const Object &rhs) {
+		texture = rhs.texture;
+		// vertices = vertices;
+		// indices = indices;
+		return *this;
+	}
 	bool _Init(const std::string path);
 
 	Texture *get_texture() {return texture;}
