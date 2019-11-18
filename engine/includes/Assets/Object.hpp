@@ -18,11 +18,7 @@ class Object { // : public Asset {
 public:
 	Object() {}
 	~Object() {}
-	Object(const Object &rhs) {
-		texture = rhs.texture;
-		vertices = rhs.vertices;
-		indices = rhs.indices;
-	}
+	Object(const Object &rhs);
 	Object operator=(const Object &rhs) {
 		texture = rhs.texture;
 		// vertices = vertices;
@@ -36,7 +32,7 @@ public:
 	std::vector<uint32_t> get_indices() {return indices;}
 
 	void load_model(const char *path);
-	void load_object(const char *path);
+	bool load_object(const char *path);
 
 private:
 	Texture *texture;

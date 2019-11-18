@@ -3,6 +3,12 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+Object::Object(const Object &rhs) {
+	memmove(texture, rhs.texture, sizeof(Texture));
+	vertices = rhs.vertices;
+	indices = rhs.indices;
+} 
+
 void Object::load_model(const char *path) {
 	/*
 	parallelize whatever parent is calling this
@@ -49,7 +55,7 @@ void Object::load_model(const char *path) {
 	}
 }
 
-void Object::load_object(const char *path) {
+bool Object::load_object(const char *path) {
 	/*
 	with open path as file {
 		load_model(file.model_path);
@@ -58,11 +64,9 @@ void Object::load_object(const char *path) {
 	*/
 
 	(void)path;
-	printf("LOAD MODEL\n");
 	load_model(MODEL_PATH.c_str());
-	printf("LOAD TEXTURE\n");
-	if (!(texture = load_texture(TEXTURE_PATH.c_str()))) {;}
-	printf("TEXTURE LOADED\n");
+	if (!(texture = load_texture(TEXTURE_PATH.c_str()))) return FAILURE;
+	return SUCCESS;
 }
 
 bool Object::_Init(const std::string path) {

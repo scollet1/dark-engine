@@ -55,7 +55,7 @@ public:
 			);
 		*/
 	);
-	void load_scene(SceneDescriptor s);
+	bool load_scene(SceneDescriptor s);
 	void load_assets(Scene *scene);
 	void preload_assets(Scene *scene);
 	void create_test_scene();

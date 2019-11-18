@@ -1,9 +1,9 @@
 #include "../../includes/Render/RenderManager.hpp"
 
-bool					RenderManager::checkValidationLayerSupport() {
+bool RenderManager::checkValidationLayerSupport() {
 	uint32_t layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
+	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
@@ -24,16 +24,14 @@ bool					RenderManager::checkValidationLayerSupport() {
 std::vector<const char*> RenderManager::getRequiredExtensions() {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
-	printf("extensions\n");
+	printf("getting required extensions\n");
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	printf("extensions\n");
+	printf("extensions count = %i\n", glfwExtensionCount);
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-	printf("extensions\n");
 
 	if (enableValidationLayers) {
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
-	printf("extensions\n");
 
 	return extensions;
 }

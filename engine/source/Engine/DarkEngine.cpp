@@ -19,7 +19,6 @@ std::vector<Object> DarkEngine::get_current_scene_objects() {
 	return scene_manager->get_current_scene().get_all_objects();
 }
 
-
 bool DarkEngine::init_window(const char *title) {
 	if (!(_window = glfwCreateWindow(
 		getScreenWidth(), getScreenHeight(),
@@ -40,7 +39,7 @@ bool DarkEngine::init_glfw() {
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	if (!(monitor = glfwGetPrimaryMonitor())) return FAILURE;
-	screen = (GLFWvidmode*)glfwGetVideoMode(monitor);
+	if (!(screen = (GLFWvidmode*)glfwGetVideoMode(monitor))) return FAILURE;
 	return SUCCESS;
 }
 
@@ -55,10 +54,11 @@ bool DarkEngine::_Init(const char *title, const char *name) {
 	if (init_window(name) == FAILURE) return FAILURE;
 
 	scene_manager = new SceneManager();
-	scene_manager->load_scene_graph("");
+	scene_manager->load_scene_graph("\
+		string does not matter for testing\
+	");
 
 	render_manager = new RenderManager(this);
-	printf("created render man\n");
 	if (render_manager->_Init(title, name) == FAILURE) {
 		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), "renderer init failed"));
 	}
@@ -84,10 +84,9 @@ bool DarkEngine::_Run() {
 bool DarkEngine::_Destroy() {
 	std::string errmsg = "destruction failed";
 
-	// if (game->_Destroy() == FAILURE)
-	// 	return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(game), errmsg));
-	if (render_manager->_Destroy() == FAILURE)
+	if (render_manager->_Destroy() == FAILURE) {
 		return (Env->_Error(true, -1, __FILE__, __func__, __LINE__,  WHICH(renderer), errmsg));
+	}
 
 	glfwDestroyWindow(_window);
 	glfwTerminate();

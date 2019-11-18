@@ -38,8 +38,8 @@ void SceneManager::transition_to(SceneDescriptor new_scene) {
 	// begin domino effect
 }
 
-void SceneManager::load_scene(SceneDescriptor s) {
-	scenes[s].load_assets();
+bool SceneManager::load_scene(SceneDescriptor s) {
+	if (scenes[s].load_assets() == FAILURE) return FAILURE;
 	assert(scenes[s].get_all_objects().size());
 
 	// if (dark_engine.get_options().optimzations.preload_scenes) {
@@ -53,6 +53,7 @@ void SceneManager::load_scene(SceneDescriptor s) {
 	// 		preload_assets(n);
 	// 	}
 	// }
+	return SUCCESS;
 }
 
 void SceneManager::load_scene_graph(const std::string path) {
@@ -84,10 +85,12 @@ void SceneManager::load_scene_graph(const std::string path) {
 	current_scene = resolve_list[0];
 	load_scene(current_scene);
 	*/
+	(void)path;
 	SceneDescriptor s_desc = boost::add_vertex(scenes);
 	boost::add_edge(s_desc, s_desc, scenes);
-	load_scene(s_desc);
-	printf("new test object loaded\n");
+	if (load_scene(s_desc) == FAILURE) {
+		throw std::runtime_error("scene failed to load!");
+	}
 	current_scene = s_desc;
 }
 

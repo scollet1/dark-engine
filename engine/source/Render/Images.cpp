@@ -170,10 +170,3 @@ void RenderManager::destroy_texture_images() {
 	    vkDestroyImage(_device, *i, nullptr);
 	}
 }
-
-bool RenderManager::initialize_swap_chain() {
-	if (createSwapChain() == FAILURE)
-		return (FAILURE);	// swap chain
-	create_swap_chain_image_views();
-	return SUCCESS;
-}

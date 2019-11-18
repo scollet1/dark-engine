@@ -724,11 +724,9 @@ QueueFamilyIndices				RenderManager::findQueueFamilies(VkPhysicalDevice device) 
 }
 																// TODO : more verbose var names
 bool RenderManager::createInstance(const char *title, const char *name) {
-	printf("ooof\n");
 	if (enableValidationLayers && !checkValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
-	printf("ooof\n");
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -738,36 +736,29 @@ bool RenderManager::createInstance(const char *title, const char *name) {
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
-	printf("ooof\n");
-
 	VkInstanceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
-	printf("ooof\n");
 
 	auto extensions = getRequiredExtensions();
-	printf("ooof\n");
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
-	printf("ooof\n");
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 	if (enableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
-
 		populateDebugMessengerCreateInfo(debugCreateInfo);
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
 	} else {
 		createInfo.enabledLayerCount = 0;
 		createInfo.pNext = nullptr;
 	}
-	printf("ooof7\n");
 
 	if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance!");
 	}
-	printf("ooof\n");
+
 	return (!!_instance);
 }
 
@@ -1179,11 +1170,12 @@ bool RenderManager::initialize_vulkan(const char *title, const char *name) {
 		return (FAILURE);	// physical device
 	if (createLogicalDevice() == FAILURE)
 		return (FAILURE);	// logical device
+	return SUCCESS;
 }
 
-bool    RenderManager::_Init(const char *title, const char *name) {
-    initialize_vulkan(title, name);
-	initialize_swap_chain();
+bool RenderManager::_Init(const char *title, const char *name) {
+    if (initialize_vulkan(title, name) == FAILURE) return FAILURE;
+	if (initialize_swap_chain() == FAILURE) return FAILURE;
 
 	if (createRenderPass() == FAILURE)
 		return (FAILURE);	// render pass

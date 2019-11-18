@@ -44,8 +44,8 @@ public:
 		}
 		*/
 	);
-	void load();
-	void load_assets();
+	bool load();
+	bool load_assets();
 	bool register_asset_to_scene(const std::string path);
 	bool mark_all_assets_loaded();
 	bool mark_asset_loaded();

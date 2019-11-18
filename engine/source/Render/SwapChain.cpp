@@ -188,7 +188,6 @@ bool RenderManager::createDescriptorSets() {
     }
 
     for (size_t i = 0; i < swapChainImages.size(); i++) {
-    	printf("%i\n", i);
         VkDescriptorBufferInfo bufferInfo = {};
         bufferInfo.buffer = uniformBuffers[i];
         bufferInfo.offset = 0;
@@ -199,7 +198,7 @@ bool RenderManager::createDescriptorSets() {
         imageInfo.imageView = texture_image_views[0];
         imageInfo.sampler = textureSampler;
 
-        std::array<VkWriteDescriptorSet, 4> descriptorWrites = {};
+        std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
@@ -228,7 +227,10 @@ bool	RenderManager::recreateSwapChain() {
 	int width = 0, height = 0;
     
     while (width == 0 && height == 0) { // note && ||
-        glfwGetFramebufferSize(dark_engine->get_window(), &width, &height);
+        glfwGetFramebufferSize(
+        	dark_engine->get_window(),
+        	&width, &height
+        );
         glfwWaitEvents();
     }
 
@@ -250,4 +252,11 @@ bool	RenderManager::recreateSwapChain() {
     createDescriptorSets();
     createCommandBuffers();
     return (SUCCESS);
+}
+
+bool RenderManager::initialize_swap_chain() {
+	if (createSwapChain() == FAILURE)
+		return (FAILURE);	// swap chain
+	create_swap_chain_image_views();
+	return SUCCESS;
 }

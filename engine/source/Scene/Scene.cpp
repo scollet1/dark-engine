@@ -1,6 +1,6 @@
 #include "../../includes/Scene/Scene.hpp"
 
-void Scene::load_assets() {
+bool Scene::load_assets() {
 	// change to hash map iterator
 	// std::vector<std::string>::iterator i;
 	// for (i = assets.begin(); i != assets.end(); i++) {
@@ -8,14 +8,15 @@ void Scene::load_assets() {
 	// 	asset_manager.load_asset(i, asset_loaded);
 	// }
 	Object test_object = Object();
-	test_object.load_object(
+	if (test_object.load_object(
 		"Testing path does not matter \
 		just need to trip the constructor"
-	);
-	printf("assets loading\n");
+	) == FAILURE) return FAILURE;
+	
 	objects.push_back(test_object);
 	assert(objects.size());
-	printf("assets loaded\n");
+	
+	return SUCCESS;
 }
 
 bool Scene::transitioned() {
@@ -77,12 +78,6 @@ void add_asset(const std::string path) {
 	register_asset_to_scene(path); // alias
 }
 
-void Scene::load() {
-	load_assets(); // alias
-}
-
-void Scene::add_test_object_to_scene(Object object) {
-	printf("huh\n");
-	objects.push_back(object);
-	printf("what\n");
+bool Scene::load() {
+	return load_assets(); // alias
 }

@@ -17,31 +17,18 @@ int main(int argc, char **argv) {
 	printf("%s\n%s\n", title, name);
 
 	dark_engine = new DarkEngine();
-	if (dark_engine->_Init(title, name) == FAILURE)
+	if (dark_engine->_Init(title, name) == FAILURE) {
+		printf("Could not initialize dark engine\n");
 		return (EXIT_FAILURE);
+	}
 
-	/*
-	 * if we're testing render mgr
-	 */
-
-#ifdef UNIT_TEST_RENDERMGR
-	if (dark_engine->getRenderer()._Test() == FAILURE)
+	if (dark_engine->_Run() == FAILURE) {
+		printf("Could not run dark engine\n");
 		return (EXIT_FAILURE);
-#endif
+	}
 
-	/*
-	 * if we're running the dark_engine
-	 */
-
-#ifdef RUN
-	if (dark_engine->_Run() == FAILURE)
-		return (EXIT_FAILURE);
 	if (dark_engine->_Destroy() == FAILURE)
 		return (EXIT_FAILURE);
 
-#else
-	//ignore
-
-#endif
 	return (EXIT_SUCCESS);
 }
